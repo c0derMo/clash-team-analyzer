@@ -1,0 +1,5 @@
+.env
+.vscode/*
+env/*
+*.xlsx
+__pycache__/*
