@@ -106,7 +106,10 @@ class Player():
         return [top1, top2, top3, top4, top5]
     
     def getMatchToAnalyze(self):
-        return self.unanalyzedMatches[0]
+        if self.unanalyzedMatches.__len__() > 0:
+            return self.unanalyzedMatches[0]
+        else:
+            return -1
     
     def getAvgKDA(self):
         pID = 0

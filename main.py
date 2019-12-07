@@ -48,7 +48,8 @@ if __name__ == "__main__":
     players = ["Senôr Aυtism", "Inselsüchtiger", "Quanox", "Rechtsklickquell", "nvq2015"]
     print("Thanks!")
     starttime = time.time()
-    print("[................................................] Quering summoner information...       ", end="")
+    util.displayLoadingbar(0, 5, "Quering summoner info...")
+    count = 0
     for player in players:
         code, response = query("/lol/summoner/v4/summoners/by-name/" + player)
         if code != 200:
@@ -57,76 +58,52 @@ if __name__ == "__main__":
             plOBJ = Player.Player()
             plOBJ.setSummonerInfo(response)
             playerOBJs.append(plOBJ)
-    print("\r[=...................] Quering champion mastery...         ", end="")
+        count += 1
+        util.displayLoadingbar(count, 5, "Quering summoner info...")
+    
+    util.displayLoadingbar(0, 5, "Quering mastery info...")
+    count = 0
     for player in playerOBJs:
         code, response = query("/lol/champion-mastery/v4/champion-masteries/by-summoner/" + player.getEncryptedSummonerId())
         if code != 200:
             print("Something went wrong during requesting mastery for " + player.getSummonerName())
         else:
             player.setMasteryInfo(response)
+        count += 1
+        util.displayLoadingbar(count, 5, "Quering mastery info...")
     
-    print("\r[==..................] Quering matchlists...               ", end="")
+    count = 0
+    util.displayLoadingbar(0, 5, "Quering matchlists...")
     for player in playerOBJs:
         code, response = query("/lol/match/v4/matchlists/by-account/" + player.getEncryptedAccountId(), "&queue=400&queue=420&endIndex=30")
         if code != 200:
             print("Something went wrong during requesting matchlists for " + player.getSummonerName())
         else:
             player.setMatchlist(response)
-    print("\r[===.................] Quering matches...                  ", end="")
-    for i in range(0, 5):
+        count += 1
+        util.displayLoadingbar(count, 5, "Quering matchlists...")
+    
+    maxMatchCount = 0
+    totalMatchCount = 0
+    for player in playerOBJs:
+        if player.getMaxMatches() > maxMatchCount:
+            maxMatchCount = player.getMaxMatches()
+        totalMatchCount += player.getMaxMatches()
+    count = 0
+    util.displayLoadingbar(0, totalMatchCount, "Quering matches...")
+    for i in range(0, maxMatchCount):
         for player in playerOBJs:
             mToAnalyze = player.getMatchToAnalyze()
-            code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-            if code != 200:
-                print("Something went wrong during requesting match for " + player.getSummonerName())
-            else:
-                player.setMatchInfo(mToAnalyze, response)
-    print("\r[====................] Quering matches...                  ", end="")
-    for i in range(0, 5):
-        for player in playerOBJs:
-            mToAnalyze = player.getMatchToAnalyze()
-            code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-            if code != 200:
-                print("Something went wrong during requesting match for " + player.getSummonerName())
-            else:
-                player.setMatchInfo(mToAnalyze, response)
-    print("\r[=====...............] Quering matches...                  ", end="")
-    for i in range(0, 5):
-        for player in playerOBJs:
-            mToAnalyze = player.getMatchToAnalyze()
-            code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-            if code != 200:
-                print("Something went wrong during requesting match for " + player.getSummonerName())
-            else:
-                player.setMatchInfo(mToAnalyze, response)
-    print("\r[======..............] Quering matches...                  ", end="")
-    for i in range(0, 5):
-        for player in playerOBJs:
-            mToAnalyze = player.getMatchToAnalyze()
-            code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-            if code != 200:
-                print("Something went wrong during requesting match for " + player.getSummonerName())
-            else:
-                player.setMatchInfo(mToAnalyze, response)
-    print("\r[=======.............] Quering matches...                  ", end="")
-    for i in range(0, 5):
-        for player in playerOBJs:
-            mToAnalyze = player.getMatchToAnalyze()
-            code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-            if code != 200:
-                print("Something went wrong during requesting match for " + player.getSummonerName())
-            else:
-                player.setMatchInfo(mToAnalyze, response)
-    print("\r[========............] Quering matches...                  ", end="")
-    for i in range(0, 5):
-        for player in playerOBJs:
-            mToAnalyze = player.getMatchToAnalyze()
-            code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-            if code != 200:
-                print("Something went wrong during requesting match for " + player.getSummonerName())
-            else:
-                player.setMatchInfo(mToAnalyze, response)
-    print("\r[====================] Done!                               ")
+            if mToAnalyze != -1:
+                code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
+                if code != 200:
+                    print("Something went wrong during requesting match for " + player.getSummonerName())
+                else:
+                    player.setMatchInfo(mToAnalyze, response)
+            count += 1
+            util.displayLoadingbar(count, totalMatchCount, "Quering matches...")
+    
+    print("Done!")
     timetaken = time.time()-starttime
     print("Analyzed 5 players in " + str(math.floor(timetaken)) + " seconds.")
 

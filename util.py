@@ -9,9 +9,11 @@ champJSON = json.loads(champS)
 def getChampionName(id):
     return champJSON[str(id)]
 
-# def displayLoadingbar(current, max, message, done=False, length=50):
-#     if done:
-#         print()
+def displayLoadingbar(current, max, message, done=False, length=50):
+    if done or current == max:
+        print("\r[" + "=" * length + "] " + message + " [" + str(current) + "/" + str(max) + "]")
+    else:
+        print("\r[" + "=" * round((current/max)*length) + "." * round(length-((current/max)*length)) + "] " + message + " [" + str(current) + "/" + str(max) + "]", end="")
 
 def export(players):
     workbook = xlsxwriter.Workbook('result-' + str(math.floor(time.time())) + '.xlsx')
@@ -42,11 +44,11 @@ def export(players):
             row += 1
         
         worksheet.write(10, col, player.getAnalyzedMatches())
-        worksheet.write(12, col, player.getToplanePercent())
-        worksheet.write(13, col, player.getJunglePercent())
-        worksheet.write(14, col, player.getMidlanePercent())
-        worksheet.write(15, col, player.getAdcPercent())
-        worksheet.write(16, col, player.getSupportPercent())
+        worksheet.write(12, col, round(player.getToplanePercent()))
+        worksheet.write(13, col, round(player.getJunglePercent()))
+        worksheet.write(14, col, round(player.getMidlanePercent()))
+        worksheet.write(15, col, round(player.getAdcPercent()))
+        worksheet.write(16, col, round(player.getSupportPercent()))
 
         row = 18
         for champ in player.getMostPlayedChampions():
@@ -54,9 +56,9 @@ def export(players):
             row += 1
 
         k, d, a = player.getAvgKDA()
-        worksheet.write(24, col, str(k) + "/" + str(d) + "/" + str(a))
-        worksheet.write(25, col, str(player.getWinRate()))
-        worksheet.write(26, col, str(player.getFirstBloodPercent()))
+        worksheet.write(24, col, round(k) + "/" + round(d) + "/" + round(a))
+        worksheet.write(25, col, round(player.getWinRate()))
+        worksheet.write(26, col, round(player.getFirstBloodPercent()))
 
         col += 1
 
