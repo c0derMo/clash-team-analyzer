@@ -13,6 +13,8 @@ load_dotenv()
 requestsDuringLastSecond = []
 requestsDuringLastTwoMinutes = []
 
+loadedGames = {}
+
 host = "https://euw1.api.riotgames.com"
 api_key = os.getenv("API_KEY")
 
@@ -95,11 +97,15 @@ if __name__ == "__main__":
         for player in playerOBJs:
             mToAnalyze = player.getMatchToAnalyze()
             if mToAnalyze != -1:
-                code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
-                if code != 200:
-                    print("Something went wrong during requesting match for " + player.getSummonerName())
+                if mToAnalyze in loadedGames:
+                    player.setMatchInfo(mToAnalyze, loadedGames[mToAnalyze])
                 else:
-                    player.setMatchInfo(mToAnalyze, response)
+                    code, response = query("/lol/match/v4/matches/" + str(mToAnalyze))
+                    if code != 200:
+                        print("Something went wrong during requesting match for " + player.getSummonerName())
+                    else:
+                        loadedGames[mToAnalyze] = response
+                        player.setMatchInfo(mToAnalyze, response)
             count += 1
             util.displayLoadingbar(count, totalMatchCount, "Quering matches...")
     

@@ -40,7 +40,9 @@ def export(players):
 
         row = 4
         for champ in player.getTop5Mastery():
-            worksheet.write(row, col, getChampionName(champ["championId"]) + " " + str(champ["championPoints"]) + " (Lvl " + str(champ["championLevel"]) + ")")
+            worksheet.write(row, col, getChampionName(champ["championId"]))
+            worksheet.write(row, col+1, str(champ["championPoints"]))
+            worksheet.write(row, col+2, "Lvl " + str(champ["championLevel"]))
             row += 1
         
         worksheet.write(10, col, player.getAnalyzedMatches())
@@ -52,14 +54,22 @@ def export(players):
 
         row = 18
         for champ in player.getMostPlayedChampions():
-            worksheet.write(row, col, getChampionName(champ["champ"]) + " (" + str(champ["amount"]) + " times played)")
+            worksheet.write(row, col, getChampionName(champ["champ"]))
+            worksheet.write(row, col+1, str(champ["amount"]) + " times played")
             row += 1
 
         k, d, a = player.getAvgKDA()
-        worksheet.write(24, col, round(k) + "/" + round(d) + "/" + round(a))
+        worksheet.write(24, col, str(round(k)) + "/" + str(round(d)) + "/" + str(round(a)))
         worksheet.write(25, col, round(player.getWinRate()))
         worksheet.write(26, col, round(player.getFirstBloodPercent()))
 
-        col += 1
+        col += 3
+
+    worksheet.set_column(0, 0, 25)
+    worksheet.set_column(1, 1, 19)
+    worksheet.set_column(4, 4, 19)
+    worksheet.set_column(7, 7, 19)
+    worksheet.set_column(10, 10, 19)
+    worksheet.set_column(13, 13, 19)
 
     workbook.close()
