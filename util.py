@@ -31,6 +31,8 @@ def export(players):
     worksheet.write(24, 0, "Average KDA:")
     worksheet.write(25, 0, "Winrate:")
     worksheet.write(26, 0, "FirstBlood%")
+    worksheet.write(28, 0, "Solo/Duo Rank")
+    worksheet.write(29, 0, "Flex Rank")
 
     col = 1
 
@@ -62,6 +64,17 @@ def export(players):
         worksheet.write(24, col, str(round(k)) + "/" + str(round(d)) + "/" + str(round(a)))
         worksheet.write(25, col, round(player.getWinRate()))
         worksheet.write(26, col, round(player.getFirstBloodPercent()))
+
+        solo_rank, solo_points = player.getSoloDuoRank()
+        solo_wr = player.getSoloDuoWR()
+        flex_rank, flex_points = player.getFlexRank()
+        flex_wr = player.getFlexWR()
+        worksheet.write(28, col, solo_rank)
+        worksheet.write(28, col+1, str(solo_points) + " LP")
+        worksheet.write(28, col+2, solo_wr)
+        worksheet.write(29, col, flex_rank)
+        worksheet.write(29, col+1, str(flex_points) + " LP")
+        worksheet.write(29, col+2, flex_wr)
 
         col += 3
 

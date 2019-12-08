@@ -18,6 +18,9 @@ class Player():
     def setMatchInfo(self, matchId, mInfo):
         self.unanalyzedMatches.remove(matchId)
         self.analyzedMatches.append(mInfo)
+    
+    def setLeagueInfo(self, linfo):
+        self.leagueInfo = linfo
 
     def getEncryptedSummonerId(self):
         return self.summonerInfo["id"]
@@ -117,6 +120,9 @@ class Player():
         deaths = 0
         assists = 0
 
+        if self.analyzedMatches.__len__() == 0:
+            return 0, 0, 0
+
         for match in self.analyzedMatches:
             for participantIdentitiy in match["participantIdentities"]:
                 if participantIdentitiy["player"]["summonerName"] == self.summonerInfo["name"]:
@@ -139,6 +145,9 @@ class Player():
         pID = 0
         fb = 0
 
+        if self.getAnalyzedMatches() == 0:
+            return 0
+
         for match in self.analyzedMatches:
             for participantIdentitiy in match["participantIdentities"]:
                 if participantIdentitiy["player"]["summonerName"] == self.summonerInfo["name"]:
@@ -157,6 +166,9 @@ class Player():
         pID = 0
         wins = 0
 
+        if self.getAnalyzedMatches() == 0:
+            return 0
+
         for match in self.analyzedMatches:
             for participantIdentitiy in match["participantIdentities"]:
                 if participantIdentitiy["player"]["summonerName"] == self.summonerInfo["name"]:
@@ -170,3 +182,27 @@ class Player():
         wins = wins/self.getAnalyzedMatches()
 
         return wins*100
+    
+    def getSoloDuoRank(self):
+        for queue in self.leagueInfo:
+            if queue["queueType"] == "RANKED_SOLO_5x5":
+                return queue["tier"] + " " + queue["rank"], queue["leaguePoints"]
+        return "UNRANKED", 0
+    
+    def getFlexRank(self):
+        for queue in self.leagueInfo:
+            if queue["queueType"] == "RANKED_FLEX_SR":
+                return queue["tier"] + " " + queue["rank"], queue["leaguePoints"]
+        return "UNRANKED", 0
+    
+    def getSoloDuoWR(self):
+        for queue in self.leagueInfo:
+            if queue["queueType"] == "RANKED_SOLO_5x5":
+                return round((queue["wins"]/queue["wins"]+queue["losses"])*100)
+        return 0
+    
+    def getFlexWR(self):
+        for queue in self.leagueInfo:
+            if queue["queueType"] == "RANKED_FLEX_SR":
+                return round((queue["wins"]/queue["wins"]+queue["losses"])*100)
+        return 0

@@ -42,12 +42,12 @@ if __name__ == "__main__":
     print("Please enter the names of all your enemies:")
     players = []
     playerOBJs = []
-    # players.append(input("P1>"))
-    # players.append(input("P2>"))
-    # players.append(input("P3>"))
-    # players.append(input("P4>"))
-    # players.append(input("P5>"))
-    players = ["Senôr Aυtism", "Inselsüchtiger", "Quanox", "Rechtsklickquell", "nvq2015"]
+    players.append(input("P1>"))
+    players.append(input("P2>"))
+    players.append(input("P3>"))
+    players.append(input("P4>"))
+    players.append(input("P5>"))
+    # players = ["Senôr Aυtism", "Inselsüchtiger", "Quanox", "Rechtsklickquell", "nvq2015"]
     print("Thanks!")
     starttime = time.time()
     util.displayLoadingbar(0, 5, "Quering summoner info...")
@@ -85,6 +85,19 @@ if __name__ == "__main__":
         count += 1
         util.displayLoadingbar(count, 5, "Quering matchlists...")
     
+    count = 0
+    util.displayLoadingbar(0, 5, "Quering league info...")
+    for player in playerOBJs:
+        code, response = query("/lol/league/v4/entries/by-summoner/" + player.getEncryptedSummonerId())
+        if code != 200:
+            print("Something went wrong during requesting league infor for " + player.getSummonerName())
+        else:
+            player.setLeagueInfo(response)
+        count += 1
+        util.displayLoadingbar(count, 5, "Quering league info...")
+
+    util.export(playerOBJs)
+
     maxMatchCount = 0
     totalMatchCount = 0
     for player in playerOBJs:
