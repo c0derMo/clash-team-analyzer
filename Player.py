@@ -12,8 +12,8 @@ class Player():
         self.matchlist = mlist
         self.unanalyzedMatches = []
         self.analyzedMatches = []
-        for match in mlist["matches"]:
-            self.unanalyzedMatches.append(match["gameId"])
+        for i in range(0, 20):
+            self.unanalyzedMatches.append(mlist["matches"][i]["gameId"])
     
     def setMatchInfo(self, matchId, mInfo):
         self.unanalyzedMatches.remove(matchId)
@@ -21,6 +21,9 @@ class Player():
     
     def setLeagueInfo(self, linfo):
         self.leagueInfo = linfo
+    
+    def setTeamMates(self, p1, p2, p3, p4):
+        self.teammates = [p1, p2, p3, p4]
 
     def getEncryptedSummonerId(self):
         return self.summonerInfo["id"]
@@ -28,11 +31,14 @@ class Player():
     def getSummonerName(self):
         return self.summonerInfo["name"]
     
+    def getSummonerLevel(self):
+        return self.summonerInfo["summonerLevel"]
+
     def getTop5Mastery(self):
         return [self.masteryInfo[0], self.masteryInfo[1], self.masteryInfo[2], self.masteryInfo[3], self.masteryInfo[4]]
     
-    def getLastModify(self):
-        return time.strftime('%d/%m/%Y %H:%M:%S', time.gmtime(self.summonerInfo["revisionDate"]/1000.))
+    def getMastery(self):
+        return self.masteryInfo
     
     def getEncryptedAccountId(self):
         return self.summonerInfo["accountId"]
@@ -76,7 +82,7 @@ class Player():
         return self.analyzedMatches.__len__()
 
     def getMaxMatches(self):
-        return self.matchlist["matches"].__len__()
+        return self.analyzedMatches.__len__() + self.unanalyzedMatches.__len__()
 
     def getMostPlayedChampions(self):
         champs = {}
@@ -85,28 +91,7 @@ class Player():
                 champs[match["champion"]] += 1
             else:
                 champs[match["champion"]] = 1
-        top1 = {"champ": 0, "amount": 0}
-        top2 = {"champ": 0, "amount": 0}
-        top3 = {"champ": 0, "amount": 0}
-        top4 = {"champ": 0, "amount": 0}
-        top5 = {"champ": 0, "amount": 0}
-        for champ in champs:
-            if champs[champ] > top1["amount"]:
-                top1["champ"] = champ
-                top1["amount"] = champs[champ]
-            elif champs[champ] > top2["amount"]:
-                top2["champ"] = champ
-                top2["amount"] = champs[champ]
-            elif champs[champ] > top3["amount"]:
-                top3["champ"] = champ
-                top3["amount"] = champs[champ]
-            elif champs[champ] > top4["amount"]:
-                top4["champ"] = champ
-                top4["amount"] = champs[champ]
-            elif champs[champ] > top5["amount"]:
-                top5["champ"] = champ
-                top5["amount"] = champs[champ]
-        return [top1, top2, top3, top4, top5]
+        return champs
     
     def getMatchToAnalyze(self):
         if self.unanalyzedMatches.__len__() > 0:
@@ -127,40 +112,17 @@ class Player():
             for participantIdentitiy in match["participantIdentities"]:
                 if participantIdentitiy["player"]["summonerName"] == self.summonerInfo["name"]:
                     pID = participantIdentitiy["participantId"]
-                    break
             for stats in match["participants"]:
                 if stats["participantId"] == pID:
                     kills += stats["stats"]["kills"]
                     deaths += stats["stats"]["deaths"]
                     assists += stats["stats"]["assists"]
-                break
         
         kills = kills/self.getAnalyzedMatches()
         deaths = deaths/self.getAnalyzedMatches()
         assists = assists/self.getAnalyzedMatches()
 
         return kills, deaths, assists
-    
-    def getFirstBloodPercent(self):
-        pID = 0
-        fb = 0
-
-        if self.getAnalyzedMatches() == 0:
-            return 0
-
-        for match in self.analyzedMatches:
-            for participantIdentitiy in match["participantIdentities"]:
-                if participantIdentitiy["player"]["summonerName"] == self.summonerInfo["name"]:
-                    pID = participantIdentitiy["participantId"]
-                    break
-            for stats in match["participants"]:
-                if stats["participantId"] == pID:
-                    if stats["stats"]["firstBloodKill"]:
-                        fb += 1
-        
-        fb = fb/self.getAnalyzedMatches()
-
-        return fb*100
     
     def getWinRate(self):
         pID = 0
@@ -173,7 +135,6 @@ class Player():
             for participantIdentitiy in match["participantIdentities"]:
                 if participantIdentitiy["player"]["summonerName"] == self.summonerInfo["name"]:
                     pID = participantIdentitiy["participantId"]
-                    break
             for stats in match["participants"]:
                 if stats["participantId"] == pID:
                     if stats["stats"]["win"]:
@@ -198,11 +159,13 @@ class Player():
     def getSoloDuoWR(self):
         for queue in self.leagueInfo:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                return round((queue["wins"]/queue["wins"]+queue["losses"])*100)
+                wr = queue["wins"]/(queue["wins"]+queue["losses"])
+                return round(wr*100, 1)
         return 0
     
     def getFlexWR(self):
         for queue in self.leagueInfo:
             if queue["queueType"] == "RANKED_FLEX_SR":
-                return round((queue["wins"]/queue["wins"]+queue["losses"])*100)
+                wr = queue["wins"]/(queue["wins"]+queue["losses"])
+                return round(wr*100, 1)
         return 0
