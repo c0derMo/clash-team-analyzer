@@ -1,7 +1,6 @@
 .env
 .vscode/*
 env/*
-*.xlsx
 __pycache__/*
 result-*
-cache/*
+cache/*/*

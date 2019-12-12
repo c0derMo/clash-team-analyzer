@@ -12,8 +12,12 @@ class Player():
         self.matchlist = mlist
         self.unanalyzedMatches = []
         self.analyzedMatches = []
-        for i in range(0, 20):
-            self.unanalyzedMatches.append(mlist["matches"][i]["gameId"])
+        if mlist["matches"].__len__() > 20:
+            for i in range(0, 20):
+                self.unanalyzedMatches.append(mlist["matches"][i]["gameId"])
+        elif mlist["matches"].__len__() > 0:
+            for i in range(0, self.unanalyzedMatches.__len__()):
+                self.unanalyzedMatches.append(mlist["matches"][i]["gameId"])
     
     def setMatchInfo(self, matchId, mInfo):
         self.unanalyzedMatches.remove(matchId)

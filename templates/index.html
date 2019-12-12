@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Clash-Team-Analyzor</title>
+    </head>
+    <body>
+        P1: <input type="text" id="p1"><br>
+        P2: <input type="text" id="p2"><br>
+        P3: <input type="text" id="p3"><br>
+        P4: <input type="text" id="p4"><br>
+        P5: <input type="text" id="p5"><br>
+        <button id="send">Analyze</button><br>
+        <div id="progress"></div>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>        <script>
+            var socket = io.connect();
+
+            document.getElementById("send").onclick = function() {
+                var p1 = $('#p1').val();
+                var p2 = $('#p2').val();
+                var p3 = $('#p3').val();
+                var p4 = $('#p4').val();
+                var p5 = $('#p5').val();
+                
+                socket.emit('analyzeStart', [p1, p2, p3, p4, p5])
+            }
+
+            socket.on('analyzeSuccessful', function(msg) {
+                console.log("Analyze successful! Redirect: " + msg)
+            });
+
+            socket.on('analyzeUpdate', function(msg) {
+                console.log('Analyze update: ' + msg)
+            });
+            
+            socket.on('analyzeFailed', function(msg) {
+                console.log('Analyze failed! ' + msg)
+            });
+
+        </script>
+    </body>
+</html>
