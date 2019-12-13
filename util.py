@@ -115,7 +115,7 @@ def export(players):
     workbook.close()
 
 def exportHTML(players):
-    f = open("template.html")
+    f = open("templates/template.html")
     newlines = []
 
     masteryStrings = []
@@ -179,7 +179,7 @@ def exportHTML(players):
     f.close()
 
 def exportStringHTML(players):
-    f = open("template.html")
+    f = open("templates/template.html")
     result = ""
 
     masteryStrings = []

@@ -10,9 +10,10 @@
 ✓ Summoner Name, Level
 ✓ Top mastery champions
 ✓ Current elo, ranked winrate
-- Most played champions in the last 30 days
+✓ Most played champions in the last 30 days
 - Played top mastery champions?
-- Most played role / lane
-- Winrate of the last 20 games
-- Average KDA of the last 20 games
+✓ Most played role / lane
+✓ Winrate of the last 20 games
+✓ Average KDA of the last 20 games
 - Has played with other teammates?
+- Winrate based on Roles

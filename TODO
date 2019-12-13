@@ -1,5 +1,7 @@
-Add Redirect
-Add Exception Throw at error in analyze
+[DONE] Add Redirect
+[DONE] Add Exception Throw at error in analyze
+[DONE] Add BG-Job to flush DB
+[DONE] Make it a little bit blyatiful
 Fix Match-Querying
 Apply at riot
 Make it absolutely blyatiful
