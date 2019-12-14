@@ -2,11 +2,7 @@
 A webapp to analyze League of Legends-Clash-Teams, written in Python.
 
 ## Usage / Setup
-To use the (not yet) webhosted version of this project, to to clash.currymaker.net.
-
-If you want to setup your own instance, install all the requirements in requirements.txt using pip, supply a API-key using a system variable called ``"API_KEY"`` or define it in a ``.env`` file and run ``main.py``. (Python 3.8 required)
-
-Please don't host your own instance publicly.
+To use the webhosted version of this project, to to [clash.currymaker.net](http://clash.currymaker.net).
 
 ## Features
 This project automaticly analyzes teams of 5 people using the supplied summoner-names. It automaticly caches their...
