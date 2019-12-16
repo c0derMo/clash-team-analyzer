@@ -7,6 +7,7 @@ import os
 import Player
 import util
 import math
+import sys
 import datetime
 
 load_dotenv()
@@ -49,16 +50,23 @@ async def query(endpoint, additional_arguments=""):
     return code, jdata
 
 class AnalyzeError(Exception):
-    pass
+    def __init__(self, message, name, query, code, response):
+        super().__init__(message)
+        self.name = name
+        self.query = query
+        self.code = code
+        self.response = response
 
-async def analyzeWrap(players, sid, sio):
+async def analyzeWrap(players, sid, sio, logger):
     try:
         await analyze(players, sid, sio)
         await sio.emit('analyzeSuccessful', "/team?p1=" + players[0] + "&p2=" + players[1] + "&p3=" + players[2] + "&p4=" + players[3] + "&p5=" + players[4], room=sid)
     except AnalyzeError as e:
         await sio.emit('analyzeFailed', str(e), room=sid)
-    except Exception:
+        logger.error("(" + e.name + ") Got an code " + str(e.code) + " when requesting " + e.query)
+    except Exception as e:
         await sio.emit('analyzeFailed', "Unknown error.", room=sid)
+        logger.error(sys.exc_info())
 
 async def analyze(players, sid, sio):
     playerOBJs = []
@@ -73,10 +81,11 @@ async def analyze(players, sid, sio):
             f.close()
             playerOBJs.append(plOBJ)
         else:
-            code, response = await query("/lol/summoner/v4/summoners/by-name/" + player)
+            qS = "/lol/summoner/v4/summoners/by-name/" + player
+            code, response = await query(qS)
             if code != 200:
-                print("Something went wrong during requesting " + player)
-                raise AnalyzeError("Error when quering player info for " + player)
+                #print("Something went wrong during requesting " + player)
+                raise AnalyzeError("Error when quering player info for " + player, player, qS, code, response)
             else:
                 plOBJ = Player.Player()
                 plOBJ.setSummonerInfo(response)
@@ -90,10 +99,11 @@ async def analyze(players, sid, sio):
     await sio.emit('analyzeUpdate', {'current': count, 'max': 135, 'status': "Quering mastery info..."}, room=sid)
     for player in playerOBJs:
         if not os.path.isfile("cache/masterys/" + player.getEncryptedSummonerId() + ".mastery"):
-            code, response = await query("/lol/champion-mastery/v4/champion-masteries/by-summoner/" + player.getEncryptedSummonerId())
+            qS = "/lol/champion-mastery/v4/champion-masteries/by-summoner/" + player.getEncryptedSummonerId()
+            code, response = await query(qS)
             if code != 200:
-                print("Something went wrong during requesting mastery for " + player.getSummonerName())
-                raise AnalyzeError("Error when quering player mastery info for " + player.getSummonerName())
+                #print("Something went wrong during requesting mastery for " + player.getSummonerName())
+                raise AnalyzeError("Error when quering player mastery info for " + player.getSummonerName(), player.getSummonerName(), qS, code, response)
             else:
                 f = open("cache/masterys/" + player.getEncryptedSummonerId() + ".mastery", "w")
                 f.write(json.dumps(response))
@@ -109,11 +119,13 @@ async def analyze(players, sid, sio):
             for i in range(0, 4):
                 begintime = datetime.datetime.now().timestamp()*1000 - 604800000*i
                 endtime = datetime.datetime.now().timestamp()*1000 - 604800000*(i+1)
-                code, response = await query("/lol/match/v4/matchlists/by-account/" + player.getEncryptedAccountId(), "&queue=400&queue=420&endTime=" + str(math.floor(begintime)) + "&beginTime=" + str(math.floor(endtime)))
-                if code != 200:
-                    print("Something went wrong during requesting matchlists for " + player.getSummonerName())
-                    raise AnalyzeError("Error when quering matchlists for " + player.getSummonerName())
-                else:
+                qS = "/lol/match/v4/matchlists/by-account/" + player.getEncryptedAccountId()
+                aP = "&queue=400&queue=420&endTime=" + str(math.floor(begintime)) + "&beginTime=" + str(math.floor(endtime))
+                code, response = await query(qS, aP)
+                if code != 200 and code != 404:
+                    #print("Something went wrong during requesting matchlists for " + player.getSummonerName())
+                    raise AnalyzeError("Error when quering matchlists for " + player.getSummonerName(), player.getSummonerName(), qS + "?" + aP[1:], code, response)
+                elif code != 404:
                     if(response["matches"].__len__() != 0):
                         for match in response["matches"]:
                             matchlist["matches"].append(match)
@@ -134,10 +146,11 @@ async def analyze(players, sid, sio):
     await sio.emit('analyzeUpdate', {'current': count, 'max': 135, 'status': "Quering league info..."}, room=sid)
     for player in playerOBJs:
         if not os.path.isfile("cache/league/" + player.getEncryptedSummonerId() + ".league"):
-            code, response = await query("/lol/league/v4/entries/by-summoner/" + player.getEncryptedSummonerId())
+            qS = "/lol/league/v4/entries/by-summoner/" + player.getEncryptedSummonerId()
+            code, response = await query(qS)
             if code != 200:
-                print("Something went wrong during requesting league info for " + player.getSummonerName())
-                raise AnalyzeError("Error when quering league info for " + player.getSummonerName())
+                #print("Something went wrong during requesting league info for " + player.getSummonerName())
+                raise AnalyzeError("Error when quering league info for " + player.getSummonerName(), player.getSummonerName(), qS, code, response)
             else:
                 player.setLeagueInfo(response)
                 f = open("cache/league/" + player.getEncryptedSummonerId() + ".league", "w")
@@ -151,10 +164,11 @@ async def analyze(players, sid, sio):
         for i in range(0, player.getMaxMatches()):
             mToAnalyze = player.getMatchToAnalyze()
             if not os.path.isfile("cache/matches/" + str(mToAnalyze) + ".match"):
-                code, response = await query("/lol/match/v4/matches/" + str(mToAnalyze))
+                qS = "/lol/match/v4/matches/" + str(mToAnalyze)
+                code, response = await query(qS)
                 if code != 200:
-                    print("Something went wrong during requesting match for " + player.getSummonerName())
-                    raise AnalyzeError("Error when requesting match for " + player.getSummonerName())
+                    #print("Something went wrong during requesting match for " + player.getSummonerName())
+                    raise AnalyzeError("Error when requesting match for " + player.getSummonerName(), player.getSummonerName(), qS, code, response)
                 else:
                     player.setMatchInfo(mToAnalyze, response)
                     f = open("cache/matches/" + str(mToAnalyze) + ".match", "w")

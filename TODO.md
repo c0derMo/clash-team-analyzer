@@ -2,6 +2,7 @@
 - Games played with other teammates
 - Winrate based on roles & champions
 ## Other improvements
+- Anonymized statistics (how many analyzes, views, non-cached players etc)
 - Improve pages
 - Remove XLSX-export
 - Remove HTML-to-file export

@@ -22,7 +22,7 @@ hasValidKey = analyzor.hasValidAPIKey()
 if hasValidKey:
     logger.info("We've got a valid API-Key. Full functionality.")
 else:
-    logger.warn("! We've got no valid API-Key! Limited functionality. !")
+    logger.warning("! We've got no valid API-Key! Limited functionality. !")
 
 async def clearDB():
     global lastClearMatches, lastClearEverything
@@ -73,11 +73,11 @@ async def getDemoData(request):
 
 @app.route('/favicon.ico')
 async def getFavicon(request):
-    return raw()
+    return raw(b"")
 
 @sio.event
 async def analyzeStart(sid, message):
-    asyncio.create_task(analyzor.analyzeWrap(message, sid, sio))
+    asyncio.create_task(analyzor.analyzeWrap(message, sid, sio, logger))
 
 if __name__ == '__main__':
     app.run()
