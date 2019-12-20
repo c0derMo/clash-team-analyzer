@@ -42,6 +42,7 @@ async def query(endpoint, additional_arguments=""):
     requestsDuringLastSecond.append(time.time())
     requestsDuringLastTwoMinutes.append(time.time())
     response = requests.get(host + endpoint + "?api_key=" + api_key + additional_arguments)
+    asyncio.create_task(util.addCodeAnalytic(response.status_code))
     code = response.status_code
     jdata = json.loads(response.text)
     if code == 429:
@@ -79,8 +80,10 @@ async def analyze(players, sid, sio):
             f = open("cache/players/" + player + ".player")
             plOBJ.setSummonerInfo(json.loads(f.read()))
             f.close()
+            asyncio.create_task(util.addStatCachedPlayer())
             playerOBJs.append(plOBJ)
         else:
+            asyncio.create_task(util.addStatNonCachedPlayer())
             qS = "/lol/summoner/v4/summoners/by-name/" + player
             code, response = await query(qS)
             if code != 200:
@@ -164,6 +167,7 @@ async def analyze(players, sid, sio):
         for i in range(0, player.getMaxMatches()):
             mToAnalyze = player.getMatchToAnalyze()
             if not os.path.isfile("cache/matches/" + str(mToAnalyze) + ".match"):
+                asyncio.create_task(util.addStatNonCachedMatch())
                 qS = "/lol/match/v4/matches/" + str(mToAnalyze)
                 code, response = await query(qS)
                 if code != 200:
@@ -175,6 +179,7 @@ async def analyze(players, sid, sio):
                     f.write(json.dumps(response))
                     f.close()
             else:
+                asyncio.create_task(util.addStatCachedMatch())
                 with open("cache/matches/" + str(mToAnalyze) + ".match") as f:
                     player.setMatchInfo(mToAnalyze, json.loads(f.read()))
                     f.close()

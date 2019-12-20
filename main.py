@@ -8,21 +8,18 @@ import os
 import glob
 import util
 import time
+from sanic_jinja2 import SanicJinja2
 
 sio = socketio.AsyncServer(async_mode='sanic')
 app = Sanic()
 sio.attach(app)
+jinja = SanicJinja2(app)
+
 
 lastClearMatches = 0
 lastClearEverything = 0
 
 app.static("/assets", "./assets")
-
-hasValidKey = analyzor.hasValidAPIKey()
-if hasValidKey:
-    logger.info("We've got a valid API-Key. Full functionality.")
-else:
-    logger.warning("! We've got no valid API-Key! Limited functionality. !")
 
 async def clearDB():
     global lastClearMatches, lastClearEverything
@@ -45,6 +42,7 @@ async def clearDB():
 
 @app.route('/')
 async def main(request):
+    asyncio.create_task(util.addPageAnalytic("/"))
     asyncio.create_task(clearDB())
     if hasValidKey:
         fn ="index.html"
@@ -55,6 +53,7 @@ async def main(request):
 
 @app.route('/team')
 async def getTeam(request):
+    asyncio.create_task(util.addPageAnalytic("/team"))
     asyncio.create_task(clearDB())
     if "p1" not in request.args or "p2" not in request.args or "p3" not in request.args or "p4" not in request.args or "p5" not in request.args:
         return redirect("/")
@@ -67,6 +66,7 @@ async def getTeam(request):
 
 @app.route('/demodata')
 async def getDemoData(request):
+    asyncio.create_task(util.addPageAnalytic("/demodata"))
     asyncio.create_task(clearDB())
     with open('templates/demodata.html', encoding="utf-8") as f:
         return html(f.read())
@@ -75,9 +75,25 @@ async def getDemoData(request):
 async def getFavicon(request):
     return raw(b"")
 
+@app.route('/statistics')
+async def getStatistics(request):
+    if "date" not in request.args:
+        dataX = util.getStatistics()
+    else:
+        dataX = util.getStatistics(reqeust.args["date"][0])
+    return jinja.render("statistics.html", request, data=dataX)
+
 @sio.event
 async def analyzeStart(sid, message):
+    asyncio.create_task(util.addStatAnalyze())
     asyncio.create_task(analyzor.analyzeWrap(message, sid, sio, logger))
 
 if __name__ == '__main__':
+    hasValidKey = analyzor.hasValidAPIKey()
+    if hasValidKey:
+        logger.info("We've got a valid API-Key. Full functionality.")
+    else:
+        logger.warning("! We've got no valid API-Key! Limited functionality. !")
+    if not util.getChampInfo():
+        logger.error("! We could not get up-to-date champ information from the Data Dragon !")
     app.run()
