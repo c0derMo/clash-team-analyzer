@@ -224,29 +224,48 @@ async def addStatCachedMatch():
 
 def getStatistics(date=datetime.datetime.now().strftime("%Y-%m-%d")):
     result = {}
-    result["views"] = []
+    result["views"] = {}
+    result["views"]["/"] = [[0, 0],[1, 0],[2, 0],[3, 0],[4, 0],[5, 0],[6, 0],[7, 0],[8, 0],[9, 0],[10, 0],[11, 0],[12, 0],[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0],[19, 0],[20, 0],[21, 0],[22, 0],[23, 0]]
+    result["views"]["/team"] = [[0, 0],[1, 0],[2, 0],[3, 0],[4, 0],[5, 0],[6, 0],[7, 0],[8, 0],[9, 0],[10, 0],[11, 0],[12, 0],[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0],[19, 0],[20, 0],[21, 0],[22, 0],[23, 0]]
+    result["views"]["/demodata"] = [[0, 0],[1, 0],[2, 0],[3, 0],[4, 0],[5, 0],[6, 0],[7, 0],[8, 0],[9, 0],[10, 0],[11, 0],[12, 0],[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0],[19, 0],[20, 0],[21, 0],[22, 0],[23, 0]]
     result["codes"] = []
     result["dates"] = []
-    for fn in glob.glob("statistics/views/"):
-        result["dates"].append(fn[:-5])
-    with open("statistics/views/" + date + ".data") as f:
-        for line in f.readlines():
-            dateCpy = line[:8]
-            dateArr = dateCpy.split(":")
-            view = line[9:]
-            result["views"].append({"hour":dateArr[0],"minute":dateArr[1],"second":dateArr[2],"view":view})
-    with open("statistics/returncodes/" + date + ".data") as f:
-        for line in f.readlines():
-            dateCpy = line[:8]
-            dateArr = dateCpy.split(":")
-            view = line[9:]
-            result["codes"].append({"hour":dateArr[0],"minute":dateArr[1],"second":dateArr[2],"code":view})
-    with open("statistics/analyze/" + date + ".data") as f:
-        lines = f.readlines()
-        result["analyze"] = {}
-        result["analyze"]["analyzeCount"] = int(lines[0])
-        result["analyze"]["unCachedPlayer"] = int(lines[1])
-        result["analyze"]["cachedPlayer"] = int(lines[2])
-        result["analyze"]["unCachedMatch"] = int(lines[3])
-        result["analyze"]["cachedMatch"] = int(lines[4])
+    result["date"] = date
+    for fn in glob.glob("statistics/views/*.data"):
+        result["dates"].append(fn[17:-5])
+    result["dates"].reverse()
+    if os.path.isfile("statistics/views/" + date + ".data"):
+        with open("statistics/views/" + date + ".data") as f:
+            for line in f.readlines():
+                dateCpy = line[:8]
+                dateArr = dateCpy.split(":")
+                view = line[9:]
+                t = round(int(dateArr[0]) + (int(dateArr[1]) / 60) + (int(dateArr[2]) / 3600))
+                if view == "/\n":
+                    tmp = result["views"]["/"][t][1] + 1
+                    result["views"]["/"][t][1] = tmp
+                elif view == "/team\n":
+                    tmp = result["views"]["/team"][t][1] + 1
+                    result["views"]["/team"][t][1] = tmp
+                elif view == "/demodata\n":
+                    tmp = result["views"]["/demodata"][t][1] + 1
+                    result["views"]["/demodata"][t][1] = tmp
+    if os.path.isfile("statistics/returncodes/" + date + ".data"):
+        with open("statistics/returncodes/" + date + ".data") as f:
+            for line in f.readlines():
+                dateCpy = line[:8]
+                dateArr = dateCpy.split(":")
+                view = line[9:]
+                result["codes"].append({"hour":dateArr[0],"minute":dateArr[1],"second":dateArr[2],"code":view})
+    if os.path.isfile("statistics/analyze/" + date + ".data"):
+        with open("statistics/analyze/" + date + ".data") as f:
+            lines = f.readlines()
+            result["analyze"] = {}
+            result["analyze"]["analyzeCount"] = int(lines[0])
+            result["analyze"]["unCachedPlayer"] = int(lines[1])
+            result["analyze"]["cachedPlayer"] = int(lines[2])
+            result["analyze"]["unCachedMatch"] = int(lines[3])
+            result["analyze"]["cachedMatch"] = int(lines[4])
+    else:
+        result["analyze"] = {"analyzeCount": 0, "unCachedPlayer": 0, "cachedPlayer": 0, "unCachedMatch": 0, "cachedMatch": 0}
     return result

@@ -8,12 +8,15 @@ import Player
 import util
 import math
 import sys
+import config
 import datetime
 
 load_dotenv()
 
 requestsDuringLastSecond = []
 requestsDuringLastTwoMinutes = []
+requestsDuringLast10Seconds = []
+requestsDuringLast10Minutes = []
 
 host = "https://euw1.api.riotgames.com"
 api_key = os.getenv("API_KEY")
@@ -30,8 +33,8 @@ def hasValidAPIKey():
     else:
         return True
 
-async def query(endpoint, additional_arguments=""):
-    while(requestsDuringLastSecond.__len__() > 18 or requestsDuringLastTwoMinutes.__len__() > 98):
+async def queryDev(endpoint, additional_arguments):
+    while(requestsDuringLastSecond.__len__() >= config.Config.getRateLimitPerSecond() or requestsDuringLastTwoMinutes.__len__() >= config.Config.getRateLimitPer2Minutes()):
         for request in requestsDuringLastSecond:
             if time.time()-request > 1:
                 requestsDuringLastSecond.remove(request)
@@ -47,8 +50,36 @@ async def query(endpoint, additional_arguments=""):
     jdata = json.loads(response.text)
     if code == 429:
         #print("Hit a 429 - why tho?")
+        await asyncio.sleep(1)
         code, jdata = await query(endpoint, additional_arguments)
     return code, jdata
+
+async def queryProd(endpoint, additional_arguments):
+    while(requestsDuringLast10Seconds.__len__() >= config.Config.getRateLimitPer10Seconds() or requestsDuringLast10Minutes.__len__() >= config.Config.getRateLimitPer10Minutes()):
+        for request in requestsDuringLast10Seconds:
+            if time.time()-request > 10:
+                requestsDuringLast10Seconds.remove(request)
+        for request in requestsDuringLast10Minutes:
+            if time.time()-request > 600:
+                requestsDuringLast10Minutes.remove(request)
+        await asyncio.sleep(1)
+    requestsDuringLast10Minutes.append(time.time())
+    requestsDuringLast10Seconds.append(time.time())
+    response = requests.get(host + endpoint + "?api_key=" + api_key + additional_arguments)
+    asyncio.create_task(util.addCodeAnalytic(response.status_code))
+    code = response.status_code
+    jdata = json.loads(response.text)
+    if code == 429:
+        #print("Hit a 429 - why tho?")
+        await asyncio.sleep(1)
+        code, jdata = await query(endpoint, additional_arguments)
+    return code, jdata
+
+async def query(endpoint, additional_arguments=""):
+    if config.Config.getAPIType() == "production":
+        return await queryProd(endpoint, additional_arguments)
+    else:
+        return await queryDev(endpoint, additional_arguments)
 
 class AnalyzeError(Exception):
     def __init__(self, message, name, query, code, response):

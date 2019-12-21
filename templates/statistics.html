@@ -17,10 +17,23 @@
                 <div class="col-md-10 offset-md-1">
                     <br>
                     <h1 style="text-align: center">Team-Analyzer</h1>
-                    <h4>Statistics</h4>
+                    <h4>Statistics - {{ data["date"] }}</h4>
                 </div>
             </div>
             <hr>
+            <div class="row">
+                <div class="col-md-8 offset-md-1">
+                    <h5>Page views</h5>
+                </div>
+                <div class="col-md-2">
+                    <select id="datepicker">
+                        <option selected>Select another date</option>
+                        {% for date in data["dates"] %}
+                        <option>{{date}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-10 offset-md-1">
                     <div class="graph-container">
@@ -34,31 +47,41 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <script src="assets/jquery.flot.min.js"></script>
         <script>
-            rootViews = [];
-            teamViews = [];
-            demoDataViews = [];
-            /*{ % for entry in data["views"] % }
-                var time = { data["views"][entry]["hour"] } * 3600 + { data["views"][entry]["minute"] } * 60 + { data["views"][entry]["second"] };
-                rootViews.push([time, 1]);
-            { % endfor % }
-            */
+            var rootViews = {{ data["views"]["/"] }};
+            var teamViews = {{ data["views"]["/team"] }};
+            var demoDataViews = {{ data["views"]["/demodata"]}};
 
             var graphData = [{
                     // Visits
                     //data: [ [6, 1300], [7, 1600], [8, 1900], [9, 2100], [10, 2500], [11, 2200], [12, 2000], [13, 1950], [14, 1900], [15, 2000] ],
-                    color: '#71c73e'
+                    data: rootViews,
+                    color: '#71c73e',
+                    points: { radius: 4, fillColor: '#71c73e' },
+                    label: "/"
                 }, {
                     // Returning Visits
                     //data: [ [6, 500], [7, 600], [8, 550], [9, 600], [10, 800], [11, 900], [12, 800], [13, 850], [14, 830], [15, 1000] ],
+                    data: teamViews,
                     color: '#77b7c5',
-                    points: { radius: 4, fillColor: '#77b7c5' }
+                    points: { radius: 4, fillColor: '#77b7c5' },
+                    label: "/team"
+                }, {
+                    data: demoDataViews,
+                    color: '#3265a8',
+                    points: { radius: 4, fillColor: '#3265a8' },
+                    label: "/demodata"
                 }
             ];
 
-            
+            var legendSettings = {
+                position: "nw",
+                container: null,
+                show: true
+            }
             
 
             $.plot($('#graph-lines'), graphData, {
+                legend: legendSettings,
                 series: {
                     points: {
                         show: true,
@@ -77,10 +100,16 @@
                 },
                 xaxis: {
                     tickColor: 'transparent',
-                    tickDecimals: 2
+                    tickDecimals: 0
                 },
                 yaxis: {
-                    tickSize: 1000
+                    tickSize: 1
+                }
+            });
+
+            $('#datepicker').change(function() {
+                if($(this).val() != "Select another date") {
+                    window.location.href = "/statistics?date=" + $(this).val()
                 }
             });
         </script>

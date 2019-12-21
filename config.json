@@ -1,0 +1,13 @@
+{
+    "_keyTypeComment": "Enter either dev or production to specify your API-Key.",
+    "keyType": "dev",
+    "rateLimits": {
+        "_rateLimitsComment": "perSecond & per2Minutes are only used for dev-keys, per10Seconds & per10Minutes for produciion-keys.",
+        "perSecond": 20,
+        "per2Minutes": 100,
+        "per10Seconds": 500,
+        "per10Minutes": 30000
+    },
+    "_matchesToAnalyzeComment": "This specifies how many matches should be analyzed in detail from each player. Enter -1 to analyze ALL",
+    "matchesToAnalyze": 20
+}

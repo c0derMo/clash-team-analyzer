@@ -9,6 +9,7 @@ import glob
 import util
 import time
 from sanic_jinja2 import SanicJinja2
+import config
 
 sio = socketio.AsyncServer(async_mode='sanic')
 app = Sanic()
@@ -80,7 +81,7 @@ async def getStatistics(request):
     if "date" not in request.args:
         dataX = util.getStatistics()
     else:
-        dataX = util.getStatistics(reqeust.args["date"][0])
+        dataX = util.getStatistics(request.args["date"][0])
     return jinja.render("statistics.html", request, data=dataX)
 
 @sio.event
@@ -94,6 +95,28 @@ if __name__ == '__main__':
         logger.info("We've got a valid API-Key. Full functionality.")
     else:
         logger.warning("! We've got no valid API-Key! Limited functionality. !")
+
     if not util.getChampInfo():
         logger.error("! We could not get up-to-date champ information from the Data Dragon !")
+    
+    try:
+        config.Config.readConfig()
+    except FileNotFoundError:
+        logger.error("! No config file was found! Standard development-configuration loaded. !")
+        config.Config.loadDefaultConfig()
+    finally:
+        logger.info("Current configuration:")
+        logger.info("Key-Type: " + config.Config.getAPIType())
+        if config.Config.getAPIType() == "production":
+            logger.info("Ratelimit per 10 seconds: " + str(config.Config.getRateLimitPer10Seconds()))
+            logger.info("Ratelimit per 10 minutes: " + str(config.Config.getRateLimitPer10Minutes()))
+        elif config.Config.getAPIType() == "dev":
+            logger.info("Ratelimit per 1 second: " + str(config.Config.getRateLimitPerSecond()))
+            logger.info("Ratelimit per 2 minutes: " + str(config.Config.getRateLimitPer2Minutes()))
+        else:
+            logger.warning("Couldn't read API-Key-Type! Using development-settings...")
+            logger.info("Ratelimit per 1 second: " + str(config.Config.getRateLimitPerSecond()))
+            logger.info("Ratelimit per 2 minutes: " + str(config.Config.getRateLimitPer2Minutes()))
+        logger.info("Matches to analyze per player: " + str(config.Config.getMatchCountToAnalyze()))
+
     app.run()

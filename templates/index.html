@@ -102,7 +102,7 @@
                 console.log("Analyze successful! Redirect: " + msg)
                 $('#progress-bar').css('width', '100%');
                 $('#status').text("Status: Analyze complete! Redirecting...")
-                window.location.replace(msg);
+                window.location.href = msg;
             });
 
             socket.on('analyzeUpdate', function(msg) {
