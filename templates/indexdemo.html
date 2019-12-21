@@ -77,7 +77,15 @@
             <hr>
             <div class="row">
                 <div class="col-md-10 offset-md-1">
-                    <p class="text-monospace">Clash-Team-Analyzer isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games
+                    <a href="statistics" style="margin-right: 15px;">Statistics</a>
+                    <a href="demodata" style="margin-right: 15px;">Demo-Data</a>
+                    <a href="http://github.com/c0dermo/clash-team-analyzer" target="_blank">GitHub</a>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-10 offset-md-1">
+                    <p class="text-monospace" style="font-size: 8pt">Clash-Team-Analyzer isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games
                             or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are
                             trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</p>
                 </div>
@@ -98,7 +106,7 @@
                 var p5 = $('#p5').val();
                 
                 socket.emit('analyzeStart', [p1, p2, p3, p4, p5])
-                $('#progress-bar').css('width', '0%');
+                $('#progress-bar').css('width', '0%').removeClass("bg-danger");
                 $('#status').text("Status: Starting analyze...")
             }
 
@@ -106,7 +114,7 @@
                 console.log("Analyze successful! Redirect: " + msg)
                 $('#progress-bar').css('width', '100%');
                 $('#status').text("Status: Analyze complete! Redirecting...")
-                window.location.replace(msg);
+                window.location.href = msg;
             });
 
             socket.on('analyzeUpdate', function(msg) {
@@ -116,7 +124,8 @@
             });
             
             socket.on('analyzeFailed', function(msg) {
-                console.log('Analyze failed! ' + msg)
+                $('#progress-bar').addClass("bg-danger")
+                $('#status').text("Status: " + msg + " Please check your player names and retry.")
             });*/
 
         </script>
