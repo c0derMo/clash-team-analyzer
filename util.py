@@ -228,7 +228,7 @@ def getStatistics(date=datetime.datetime.now().strftime("%Y-%m-%d")):
     result["views"]["/"] = [[0, 0],[1, 0],[2, 0],[3, 0],[4, 0],[5, 0],[6, 0],[7, 0],[8, 0],[9, 0],[10, 0],[11, 0],[12, 0],[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0],[19, 0],[20, 0],[21, 0],[22, 0],[23, 0]]
     result["views"]["/team"] = [[0, 0],[1, 0],[2, 0],[3, 0],[4, 0],[5, 0],[6, 0],[7, 0],[8, 0],[9, 0],[10, 0],[11, 0],[12, 0],[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0],[19, 0],[20, 0],[21, 0],[22, 0],[23, 0]]
     result["views"]["/demodata"] = [[0, 0],[1, 0],[2, 0],[3, 0],[4, 0],[5, 0],[6, 0],[7, 0],[8, 0],[9, 0],[10, 0],[11, 0],[12, 0],[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0],[19, 0],[20, 0],[21, 0],[22, 0],[23, 0]]
-    result["codes"] = []
+    result["codes"] = {}
     result["dates"] = []
     result["date"] = date
     for fn in glob.glob("statistics/views/*.data"):
@@ -253,10 +253,11 @@ def getStatistics(date=datetime.datetime.now().strftime("%Y-%m-%d")):
     if os.path.isfile("statistics/returncodes/" + date + ".data"):
         with open("statistics/returncodes/" + date + ".data") as f:
             for line in f.readlines():
-                dateCpy = line[:8]
-                dateArr = dateCpy.split(":")
-                view = line[9:]
-                result["codes"].append({"hour":dateArr[0],"minute":dateArr[1],"second":dateArr[2],"code":view})
+                code = line[9:-1]
+                if code in result["codes"]:
+                    result["codes"][code] += 1
+                else:
+                    result["codes"][code] = 1
     if os.path.isfile("statistics/analyze/" + date + ".data"):
         with open("statistics/analyze/" + date + ".data") as f:
             lines = f.readlines()
