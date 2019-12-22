@@ -56,7 +56,7 @@ def loadDemoData():
     for p1O in playerOBJs:
         for i in range(0, p1O.getMaxMatches()):
             mToAnalyze = p1O.getMatchToAnalyze()
-            f = open("cache/matches/" + str(mToAnalyze) + ".match")
+            f = open("demodata/matches/" + str(mToAnalyze) + ".match")
             p1O.setMatchInfo(mToAnalyze, json.loads(f.read()))
             f.close()
     return playerOBJs
