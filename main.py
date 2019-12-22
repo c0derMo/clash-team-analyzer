@@ -82,15 +82,31 @@ async def getTeam(request):
                 mC[player].append(tmp)
 
         return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC)
-        # mightBeHTML = util.exportStringHTML(playerOBJs)
-        # return html(mightBeHTML)
 
 @app.route('/demodata')
 async def getDemoData(request):
     asyncio.create_task(util.addPageAnalytic("/demodata"))
     asyncio.create_task(clearDB())
-    with open('templates/demodata.html', encoding="utf-8") as f:
-        return html(f.read())
+    playerOBJs = util.loadDemoData()
+    mPC = {}
+    for player in playerOBJs:
+        tmp = OrderedDict()
+        sortedChamps = OrderedDict(sorted(player.getMostPlayedChampions().items(), key=lambda item: item[1], reverse=True))
+        for champ in sortedChamps:
+            tmp[util.getChampionName(champ)] = sortedChamps[champ]
+            tmp.move_to_end(util.getChampionName(champ))
+        mPC[player] = tmp
+    
+    mC = {}
+    for player in playerOBJs:
+        mC[player] = []
+        for champ in player.getMastery():
+            tmp = {"champ": util.getChampionName(champ["championId"]),
+                    "level": champ["championLevel"],
+                    "points": champ["championPoints"]}
+            mC[player].append(tmp)
+
+    return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC)
 
 @app.route('/favicon.ico')
 async def getFavicon(request):

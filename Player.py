@@ -182,7 +182,7 @@ class Player():
         
         wins = wins/self.getAnalyzedMatches()
 
-        return wins*100
+        return round(wins*100,2)
     
     def getSoloDuoRank(self):
         for queue in self.leagueInfo:

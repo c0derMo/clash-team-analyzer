@@ -35,68 +35,31 @@ def getChampInfo():
     champJSON = resultData
     return True
 
-
-def exportStringHTML(players):
-    f = open("templates/template.html")
-    result = ""
-
-    masteryStrings = []
+def loadDemoData():
+    players = ["Inselsüchtiger", "Quanox", "Senôr Aυtism", "Rechtsklickquell", "nvq2015"]
+    playerOBJs = []
     for player in players:
-        index = 1
-        masterTmp = ""
-        for mastery in player.getMastery():
-            tmp = masteryRow
-            tmp = tmp.replace("%NR", str(index))
-            tmp = tmp.replace("%CHAMP", getChampionName(mastery["championId"]))
-            tmp = tmp.replace("%LEVEL", str(mastery["championLevel"]))
-            tmp = tmp.replace("%POINTS", str(mastery["championPoints"]))
-            masterTmp += tmp
-            index += 1
-        masteryStrings.append(masterTmp)
-    
-    mostPlayedStrings = []
-    for player in players:
-        index = 1
-        masterTmp = ""
-        sortedChamps = OrderedDict(sorted(player.getMostPlayedChampions().items(), key=lambda item: item[1], reverse=True))
-        for key in sortedChamps:
-            tmp = mostPlayedRow
-            tmp = tmp.replace("%NR", str(index))
-            tmp = tmp.replace("%CHAMP", getChampionName(key))
-            tmp = tmp.replace("%AMOUNT", str(sortedChamps[key]))
-            masterTmp += tmp
-            index += 1
-        mostPlayedStrings.append(masterTmp)
-
-    for line in f.readlines():
-        index = 1
-        for player in players:
-            line = line.replace("%LEVEL-P" + str(index), str(player.getSummonerLevel()))
-            line = line.replace("%WR-P" + str(index), str(round(player.getWinRate(), 1)) + "%")
-
-            k1, d1, a1 = player.getAvgKDA()
-            line = line.replace("%KDA-P" + str(index), str(round(k1, 1)) + "/" + str(round(d1, 1)) + "/" + str(round(a1, 1)))
-            sd1, sd1p = player.getSoloDuoRank()
-            line = line.replace("%SD-P" + str(index), sd1 + " " + str(sd1p) + " LP")
-            line = line.replace("%WR-SD-P" + str(index), str(player.getSoloDuoWR()) + "%")
-            flex1, flex1p = player.getFlexRank()
-            line = line.replace("%FLEX-P" + str(index), flex1 + " " + str(flex1p) + " LP")
-            line = line.replace("%WR-FLEX-P" + str(index), str(player.getFlexWR()) + "%")
-
-            line = line.replace("%P" + str(index) + "-MASTERY", masteryStrings[index-1])
-            line = line.replace("%P" + str(index) + "-MOSTPLAYED", mostPlayedStrings[index-1])
-
-            line = line.replace("%P" + str(index) + "-TOP", str(round(player.getToplanePercent(), 1)))
-            line = line.replace("%P" + str(index) + "-JNG", str(round(player.getJunglePercent(), 1)))
-            line = line.replace("%P" + str(index) + "-MID", str(round(player.getMidlanePercent(), 1)))
-            line = line.replace("%P" + str(index) + "-ADC", str(round(player.getAdcPercent(), 1)))
-            line = line.replace("%P" + str(index) + "-SUP", str(round(player.getSupportPercent(), 1)))
-            line = line.replace("%P" + str(index) + "-GAMES", str(player.getAnalyzedMatches()))
-
-            line = line.replace("%P" + str(index), player.getSummonerName())
-            index += 1
-        result += line
-    return result
+        p1O = Player.Player()
+        f = open("demodata/players/" + player + ".player")
+        p1O.setSummonerInfo(json.loads(f.read()))
+        f.close()
+        f = open("demodata/masterys/" + p1O.getEncryptedSummonerId() + ".mastery")
+        p1O.setMasteryInfo(json.loads(f.read()))
+        f.close()
+        f = open("demodata/matchlists/" + p1O.getEncryptedAccountId() + ".matchlist")
+        p1O.setMatchlist(json.loads(f.read()))
+        f.close()
+        f = open("demodata/league/" + p1O.getEncryptedSummonerId() + ".league")
+        p1O.setLeagueInfo(json.loads(f.read()))
+        f.close()
+        playerOBJs.append(p1O)
+    for p1O in playerOBJs:
+        for i in range(0, p1O.getMaxMatches()):
+            mToAnalyze = p1O.getMatchToAnalyze()
+            f = open("cache/matches/" + str(mToAnalyze) + ".match")
+            p1O.setMatchInfo(mToAnalyze, json.loads(f.read()))
+            f.close()
+    return playerOBJs
 
 def loadPlayersFromCache(p1, p2, p3, p4, p5):
     players = [p1, p2, p3, p4, p5]
