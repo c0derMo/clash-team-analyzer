@@ -1,5 +1,8 @@
 import time
 
+allowed_characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+escapeWith = "-"
+
 class Player():
 
     def setSummonerInfo(self, sinfo):
@@ -32,8 +35,17 @@ class Player():
     def getEncryptedSummonerId(self):
         return self.summonerInfo["id"]
     
-    def getSummonerName(self):
-        return self.summonerInfo["name"]
+    def getSummonerName(self, escaped=False):
+        if not escaped:
+            return self.summonerInfo["name"]
+        else:
+            escapedString = ""
+            for letter in self.summonerInfo["name"].lower():
+                if letter not in allowed_characters:
+                    escapedString += "-"
+                else:
+                    escapedString += letter
+            return escapedString
     
     def getSummonerLevel(self):
         return self.summonerInfo["summonerLevel"]
@@ -148,6 +160,10 @@ class Player():
 
         return kills, deaths, assists
     
+    def getAvgKDAString(self):
+        kills, deaths, assists = self.getAvgKDA()
+        return str(round(kills, 1)) + "/" + str(round(deaths, 1)) + "/" + str(round(assists, 1))
+
     def getWinRate(self):
         pID = 0
         wins = 0
@@ -174,12 +190,20 @@ class Player():
                 return queue["tier"] + " " + queue["rank"], queue["leaguePoints"]
         return "UNRANKED", 0
     
+    def getSoloDuoRankString(self):
+        r, t = self.getSoloDuoRank()
+        return r + " " + str(t) + "LP"
+
     def getFlexRank(self):
         for queue in self.leagueInfo:
             if queue["queueType"] == "RANKED_FLEX_SR":
                 return queue["tier"] + " " + queue["rank"], queue["leaguePoints"]
         return "UNRANKED", 0
     
+    def getFlexRankString(self):
+        r, t = self.getFlexRank()
+        return r + " " + str(t) + "LP"
+
     def getSoloDuoWR(self):
         for queue in self.leagueInfo:
             if queue["queueType"] == "RANKED_SOLO_5x5":

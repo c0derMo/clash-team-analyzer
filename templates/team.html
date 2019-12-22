@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <title>Clash-Team-Breakdown</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 offset-md-1">
+                    <h1 class="border-bottom">Clash Team Breakdown</h1>
+                </div>
+            </div>
+            <br>
+            {% for player in players %}
+            <div class="row">
+                <div class="col-md-4 offset-md-1">
+                    <h2>{{player.getSummonerName()}}</h2>
+                </div>
+                <div class="col-md-6">
+                    <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{player.getToplanePercent()}}%" aria-valuenow="{{player.getToplanePercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getToplanePercent()}}% Top"></div>
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{player.getJunglePercent()}}%" aria-valuenow="{{player.getJunglePercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getJunglePercent()}}% Jungle"></div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{player.getMidlanePercent()}}%" aria-valuenow="{{player.getMidlanePercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getMidlanePercent()}}% Mid"></div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{player.getAdcPercent()}}%" aria-valuenow="{{player.getAdcPercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getAdcPercent()}}% ADC"></div>
+                            <div class="progress-bar bg-dark" role="progressbar" style="width: {{player.getSupportPercent()}}%" aria-valuenow="{{player.getSupportPercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getSupportPercent()}}% Support"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-md-6 offset-md-5">
+                    <h7 class="border-top font-weight-lighter">Calculated based on the last 30 days of Draft Pick & Solo/Duo games</h7>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-md-10 offset-md-1">
+                    <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="generalTab" data-toggle="tab" href="#generalTabDiv" role="tab" aria-controls="generalTab" aria-selected="true">General</a>
+                        </li>
+                        {% for player in players %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="{{player.getSummonerName(True)}}Tab" data-toggle="tab" href="#{{player.getSummonerName(True)}}TabDiv" role="tab" aria-controls="{{player.getSummonerName(True)}}Tab" aria-selected="false">{{player.getSummonerName()}}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                        
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="generalTabDiv" role="tabpanel" aria-labelledby="generalTab">There might be some info here. Eventually. Sometime.</div>
+                        {% for player in players %}
+                        <div class="tab-pane" id="{{player.getSummonerName(True)}}TabDiv" role="tabpanel" aria-labelledby="{{player.getSummonerName(True)}}Tab">
+                            <br>
+                            <h4>{{player.getSummonerName()}} - Level {{player.getSummonerLevel()}}</h4>
+                            <br>
+                            <h5>Winrate: {{player.getWinRate()}}</h5>
+                            <h5>Average KDA: {{player.getAvgKDAString()}}</h5>
+                            <h7 class="border-top font-weight-lighter">Calculated based on the last {{player.getAnalyzedMatches()}} games</h7>
+                            <br>
+                            <br>
+                            <h5>Solo/Duo-Rank: {{player.getSoloDuoRankString()}}</h5>
+                            <h6>Solo/Duo-Winrate: {{player.getSoloDuoWR()}}%</h6>
+                            <br>
+                            <h5>Flex-Rank: {{player.getFlexRankString()}}</h5>
+                            <h6>Flex-Winrate: {{player.getFlexWR()}}%</h6>
+                            <br>
+                            <br>
+                            <ul class="nav nav-tabs" id="{{player.getSummonerName(True)}}Tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link" id="{{player.getSummonerName(True)}}Mastery" data-toggle="tab" href="#{{player.getSummonerName(True)}}MasteryDiv" role="tab" aria-controls="{{player.getSummonerName(True)}}Mastery" aria-selected="true">Mastery</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="{{player.getSummonerName(True)}}MostPlayed" data-toggle="tab" href="#{{player.getSummonerName(True)}}MostPlayedDiv" role="tab" aria-controls="{{player.getSummonerName(True)}}MostPlayed" aria-selected="true">Most Played</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="{{player.getSummonerName(True)}}MasteryDiv" role="tabpanel" aria-labelledby="{{player.getSummonerName(True)}}Mastery">
+                                    <table class="table">
+                                        <thead>
+                                            <th scope="col"></th>
+                                            <th scope="col">Champion</th>
+                                            <th scope="col">Level</th>
+                                            <th scope="col">Points</th>
+                                        </thead>
+                                        <tbody>
+                                            {% for champ in mastery[player] %}
+                                            <tr>
+                                                <td><img src="http://ddragon.leagueoflegends.com/cdn/9.24.2/img/champion/{{champ["champ"]}}.png" style="width: 60px; height: 60px;"></td>
+                                                <td>{{champ["champ"]}}</td>
+                                                <td>{{champ["level"]}}</td>
+                                                <td>{{champ["points"]}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane" id="{{player.getSummonerName(True)}}MostPlayedDiv" role="tabpanel" aria-labelledby="{{player.getSummonerName(True)}}MostPlayed">
+                                    <h7 class="border-botto font-weight-lighter">Calculated based on the last 30 days of Draft Pick & Solo/Duo games</h7>
+                                        <table class="table">
+                                            <thead>
+                                                <th scope="col"></th>
+                                                <th scope="col">Champion</th>
+                                                <th scope="col">Times played</th>
+                                            </thead>
+                                            <tbody>
+                                                {% for champ in mostPlayedChamps[player] %}
+                                                <tr>
+                                                    <td><img src="http://ddragon.leagueoflegends.com/cdn/9.24.2/img/champion/{{champ}}.png" style="width: 60px; height: 60px;"></td>
+                                                    <td>{{champ}}</td>
+                                                    <td>{{mostPlayedChamps[player][champ]}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                $('#p1Tabs li:first-child a').tab('show')
+                $('#p2Tabs li:first-child a').tab('show')
+                $('#p3Tabs li:first-child a').tab('show')
+                $('#p4Tabs li:first-child a').tab('show')
+                $('#p5Tabs li:first-child a').tab('show')
+            })
+        </script>
+    </body>
+</html>

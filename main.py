@@ -10,8 +10,9 @@ import util
 import time
 from sanic_jinja2 import SanicJinja2
 import config
+from collections import OrderedDict
 
-sio = socketio.AsyncServer(async_mode='sanic')
+sio = socketio.AsyncServer(async_mode='sanic', logger=False)
 app = Sanic()
 sio.attach(app)
 jinja = SanicJinja2(app)
@@ -62,8 +63,27 @@ async def getTeam(request):
     if playerOBJs == -1:
         return redirect("/")
     else:
-        mightBeHTML = util.exportStringHTML(playerOBJs)
-        return html(mightBeHTML)
+        mPC = {}
+        for player in playerOBJs:
+            tmp = OrderedDict()
+            sortedChamps = OrderedDict(sorted(player.getMostPlayedChampions().items(), key=lambda item: item[1], reverse=True))
+            for champ in sortedChamps:
+                tmp[util.getChampionName(champ)] = sortedChamps[champ]
+                tmp.move_to_end(util.getChampionName(champ))
+            mPC[player] = tmp
+        
+        mC = {}
+        for player in playerOBJs:
+            mC[player] = []
+            for champ in player.getMastery():
+                tmp = {"champ": util.getChampionName(champ["championId"]),
+                        "level": champ["championLevel"],
+                        "points": champ["championPoints"]}
+                mC[player].append(tmp)
+
+        return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC)
+        # mightBeHTML = util.exportStringHTML(playerOBJs)
+        # return html(mightBeHTML)
 
 @app.route('/demodata')
 async def getDemoData(request):
