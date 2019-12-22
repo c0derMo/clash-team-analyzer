@@ -49,6 +49,10 @@ class Player():
     
     def getToplanePercent(self):
         topmatches = 0
+
+        if self.matchlist["matches"].__len__() <= 0:
+            return 0
+
         for match in self.matchlist["matches"]:
             if match["lane"] == "TOP":
                 topmatches += 1
@@ -56,6 +60,10 @@ class Player():
     
     def getMidlanePercent(self):
         topmatches = 0
+
+        if self.matchlist["matches"].__len__() <= 0:
+            return 0
+        
         for match in self.matchlist["matches"]:
             if match["lane"] == "MID":
                 topmatches += 1
@@ -63,6 +71,10 @@ class Player():
         
     def getAdcPercent(self):
         topmatches = 0
+
+        if self.matchlist["matches"].__len__() <= 0:
+            return 0
+
         for match in self.matchlist["matches"]:
             if match["lane"] == "BOTTOM" and match["role"] == "DUO_CARRY":
                 topmatches += 1
@@ -70,6 +82,10 @@ class Player():
     
     def getSupportPercent(self):
         topmatches = 0
+
+        if self.matchlist["matches"].__len__() <= 0:
+            return 0
+
         for match in self.matchlist["matches"]:
             if match["lane"] == "BOTTOM" and match["role"] == "DUO_SUPPORT":
                 topmatches += 1
@@ -77,6 +93,10 @@ class Player():
     
     def getJunglePercent(self):
         topmatches = 0
+
+        if self.matchlist["matches"].__len__() <= 0:
+            return 0
+
         for match in self.matchlist["matches"]:
             if match["lane"] == "JUNGLE":
                 topmatches += 1
