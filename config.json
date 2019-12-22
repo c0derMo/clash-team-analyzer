@@ -9,5 +9,7 @@
         "per10Minutes": 30000
     },
     "_matchesToAnalyzeComment": "This specifies how many matches should be analyzed in detail from each player. Enter -1 to analyze ALL",
-    "matchesToAnalyze": 20
+    "matchesToAnalyze": 20,
+    "hostname": "127.0.0.1",
+    "port": 8000
 }

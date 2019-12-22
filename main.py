@@ -155,4 +155,4 @@ if __name__ == '__main__':
             logger.info("Ratelimit per 2 minutes: " + str(config.Config.getRateLimitPer2Minutes()))
         logger.info("Matches to analyze per player: " + str(config.Config.getMatchCountToAnalyze()))
 
-    app.run()
+    app.run(host=config.Config.getHostname(), port=config.Config.getPort())

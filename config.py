@@ -15,6 +15,8 @@ class Config:
         cfg["rateLimits"]["perSecond"] = 20
         cfg["rateLimits"]["per2Minutes"] = 100
         cfg["matchesToAnalyze"] = 20
+        cfg["hostname"] = "127.0.0.1"
+        cfg["port"] = 8000
 
     def readConfig():
         global cfg
@@ -64,3 +66,17 @@ class Config:
         if not fileRead:
             readConfig()
         return cfg["matchesToAnalyze"]
+    
+    def getHostname():
+        global cfg
+        global fileRead
+        if not fileRead:
+            readConfig()
+        return cfg["hostname"]
+    
+    def getPort():
+        global cfg
+        global fileRead
+        if not fileRead:
+            readConfig()
+        return cfg["port"]
