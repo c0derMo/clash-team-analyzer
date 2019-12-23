@@ -196,7 +196,7 @@ def getStatistics(date=datetime.datetime.now().strftime("%Y-%m-%d")):
     result["date"] = date
     for fn in glob.glob("statistics/views/*.data"):
         result["dates"].append(fn[17:-5])
-    result["dates"].reverse()
+    result["dates"].sort(reverse=True)
     if os.path.isfile("statistics/views/" + date + ".data"):
         with open("statistics/views/" + date + ".data") as f:
             for line in f.readlines():
