@@ -47,11 +47,9 @@ async def main(request):
     asyncio.create_task(util.addPageAnalytic("/"))
     asyncio.create_task(clearDB())
     if hasValidKey:
-        fn ="index.html"
+        return jinja.render("index.html", request, demo=False)
     else:
-        fn = "indexdemo.html"
-    with open('templates/' + fn) as f:
-        return html(f.read())
+        return jinja.render("index.html", request, demo=True)
 
 @app.route('/team')
 async def getTeam(request):
