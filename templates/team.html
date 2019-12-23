@@ -13,12 +13,24 @@
             </div>
             <br>
             {% for player in players %}
+            {% if player.matchlist["matches"].__len__() <= 0 %}
+            <div class="row">
+                <div class="col-md-10 offset-md-1">
+                    <div class="alert alert-danger" role="alert">
+                        Warning: {{player.getSummonerName()}} has no matches in the last 30d in Draft Pick and Solo/Duo-Ranked.
+                        Some functionality will be limited.
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% for player in players %}
             <div class="row">
                 <div class="col-md-4 offset-md-1">
                     <h2>{{player.getSummonerName()}}</h2>
                 </div>
                 <div class="col-md-6">
-                    <div class="progress">
+                    <div style="margin-top: 10px" class="progress">
                             <div class="progress-bar" role="progressbar" style="width: {{player.getToplanePercent()}}%" aria-valuenow="{{player.getToplanePercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getToplanePercent()}}% Top"></div>
                             <div class="progress-bar bg-success" role="progressbar" style="width: {{player.getJunglePercent()}}%" aria-valuenow="{{player.getJunglePercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getJunglePercent()}}% Jungle"></div>
                             <div class="progress-bar bg-danger" role="progressbar" style="width: {{player.getMidlanePercent()}}%" aria-valuenow="{{player.getMidlanePercent()}}" aria-valuemin="0" aria-valuemax="100" data-toggle="tooltip" data-placement="top" title="{{player.getMidlanePercent()}}% Mid"></div>
