@@ -233,3 +233,43 @@ def getStatistics(date=datetime.datetime.now().strftime("%Y-%m-%d")):
     else:
         result["analyze"] = {"analyzeCount": 0, "unCachedPlayer": 0, "cachedPlayer": 0, "unCachedMatch": 0, "cachedMatch": 0}
     return result
+
+async def addNon200Error(code, player, request):
+    fn = datetime.datetime.now().strftime("%Y-%m-%d.data")
+    f = open("statistics/errors/" + fn, "a")
+    f.write(datetime.datetime.now().strftime("%H:%M:%S ") + str(code) + " for player " + str(player) + " when requesting " + str(request) + "\n")
+    f.close()
+
+def getMatchesPlayedTogether(p1, p2):
+    p1MatchIDS = []
+    p2MatchIDS = []
+    for match in p1.matchlist["matches"]:
+        p1MatchIDS.append(match["gameId"])
+    for match in p2.matchlist["matches"]:
+        p2MatchIDS.append(match["gameId"])
+    return str(len(set(p1MatchIDS) & set(p2MatchIDS)))
+
+def getMatchesPlayedAsFullTeam(players):
+    p1 = players[0]
+    p2 = players[1]
+    p3 = players[2]
+    p4 = players[3]
+    p5 = players[4]
+    p1MatchIDS = []
+    p2MatchIDS = []
+    p3MatchIDS = []
+    p4MatchIDS = []
+    p5MatchIDS = []
+    
+    for match in p1.matchlist["matches"]:
+        p1MatchIDS.append(match["gameId"])
+    for match in p2.matchlist["matches"]:
+        p2MatchIDS.append(match["gameId"])
+    for match in p3.matchlist["matches"]:
+        p3MatchIDS.append(match["gameId"])
+    for match in p4.matchlist["matches"]:
+        p4MatchIDS.append(match["gameId"])
+    for match in p5.matchlist["matches"]:
+        p5MatchIDS.append(match["gameId"])
+
+    return len(set(p1MatchIDS) & set(p2MatchIDS) & set(p3MatchIDS) & set(p4MatchIDS) & set(p5MatchIDS))

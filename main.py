@@ -17,7 +17,6 @@ app = Sanic()
 sio.attach(app)
 jinja = SanicJinja2(app)
 
-
 lastClearMatches = 0
 lastClearEverything = 0
 
@@ -104,7 +103,7 @@ async def getDemoData(request):
                     "points": champ["championPoints"]}
             mC[player].append(tmp)
 
-    return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC)
+    return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC, matchesPlayedAsTeam=util.getMatchesPlayedAsFullTeam(playerOBJs))
 
 @app.route('/favicon.ico')
 async def getFavicon(request):

@@ -61,7 +61,39 @@
                     </ul>
                         
                     <div class="tab-content">
-                        <div class="tab-pane active" id="generalTabDiv" role="tabpanel" aria-labelledby="generalTab">There might be some info here. Eventually. Sometime.</div>
+                        <div class="tab-pane active" id="generalTabDiv" role="tabpanel" aria-labelledby="generalTab">
+                        
+                        <br>
+                        <h4>Matches played as full team: {{matchesPlayedAsTeam}}</h4>
+                        <br>
+
+                        <h4>Matches played together:</h4>
+                        <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col"></th>
+                        {% for player in players %}
+                            <th scope="col">{{player.getSummonerName()}}</th>
+                        {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for player in players %}
+                        <tr>
+                            <th scope="row">{{ player.getSummonerName() }}</th>
+                        {% for player2 in players %}
+                            {% if player == player2 %}
+                                <td class="bg-dark">-</td>
+                            {% else %}
+                                <td>{{ player.getMatchesPlayedWith(player2) }}</td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                        </table>
+
+                        </div>
                         {% for player in players %}
                         <div class="tab-pane" id="{{player.getSummonerName(True)}}TabDiv" role="tabpanel" aria-labelledby="{{player.getSummonerName(True)}}Tab">
                             <br>

@@ -1,4 +1,5 @@
 import time
+import util
 
 allowed_characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
 escapeWith = "-"
@@ -217,3 +218,6 @@ class Player():
                 wr = queue["wins"]/(queue["wins"]+queue["losses"])
                 return round(wr*100, 1)
         return 0
+    
+    def getMatchesPlayedWith(self, p2):
+        return util.getMatchesPlayedTogether(self, p2)

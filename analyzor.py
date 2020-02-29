@@ -96,6 +96,7 @@ async def analyzeWrap(players, sid, sio, logger):
     except AnalyzeError as e:
         await sio.emit('analyzeFailed', str(e), room=sid)
         logger.error("(" + e.name + ") Got an code " + str(e.code) + " when requesting " + e.query)
+        util.addNon200Error(e.code, e.name, e.query)
     except Exception as e:
         await sio.emit('analyzeFailed', "Unknown error.", room=sid)
         logger.error(sys.exc_info())
