@@ -64,7 +64,25 @@
                         <input type="text" id="p5" class="form-control"  aria-describedby="basic-addon1">
                     </div>
                     <br>
-                    <button type="button" class="btn btn-success" id="send" style="width: 100%">Analyze</button>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="regionSelect">Region</label>
+                        </div>
+                        <select class="custom-select" id="regionSelect">
+                            <option value="br">BR</option>
+                            <option value="eune">EUNE</option>
+                            <option value="euw" selected>EUW</option>
+                            <option value="jp">JP</option>
+                            <option value="kr">KR</option>
+                            <option value="lan">LAN</option>
+                            <option value="las">LAS</option>
+                            <option value="na">NA</option>
+                            <option value="oce">OCE</option>
+                            <option value="ru">RU</option>
+                            <option value="tr">TR</option>
+                        </select>
+                        <button type="button" class="btn btn-success" id="send" style="width: 80%; margin-left: 20px;">Analyze</button>
+                    </div>
                 </div>
             </div>
             <hr>
@@ -112,7 +130,7 @@
                 var p4 = $('#p4').val();
                 var p5 = $('#p5').val();
                 
-                socket.emit('analyzeStart', [p1, p2, p3, p4, p5])
+                socket.emit('analyzeStart', {"players": [p1, p2, p3, p4, p5], "region": $('#regionSelect').val()})
                 $('#progress-bar').css('width', '0%').removeClass("bg-danger");
                 $('#status').text("Status: Starting analyze...")
             }

@@ -1,5 +1,4 @@
 ## Analyze-Features
-- Games played with other teammates
 - Winrate based on roles & champions
 - Add mini-matchhistory
 ## Other improvements

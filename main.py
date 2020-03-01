@@ -27,16 +27,16 @@ async def clearDB():
     currentTime = time.time()
     if currentTime - lastClearEverything > 7200:
         logger.info("Clearing cache of league, masterys, matchlists and players...")
-        files = glob.glob("cache/league/*")
-        files += glob.glob("cache/masterys/*")
-        files += glob.glob("cache/matchlists/*")
-        files += glob.glob("cache/players/*")
+        files = glob.glob("cache/*/league/*")
+        files += glob.glob("cache/*/masterys/*")
+        files += glob.glob("cache/*/matchlists/*")
+        files += glob.glob("cache/*/players/*")
         for f in files:
             os.remove(f)
         lastClearEverything = currentTime
     if currentTime - lastClearMatches > 86400:
         logger.info("Clearing cache of matches...")
-        files = glob.glob("cache/matches/*")
+        files = glob.glob("cache/*/matches/*")
         for f in files:
             os.remove(f)
         lastClearMatches = currentTime
@@ -54,9 +54,9 @@ async def main(request):
 async def getTeam(request):
     asyncio.create_task(util.addPageAnalytic("/team"))
     asyncio.create_task(clearDB())
-    if "p1" not in request.args or "p2" not in request.args or "p3" not in request.args or "p4" not in request.args or "p5" not in request.args:
+    if "p1" not in request.args or "p2" not in request.args or "p3" not in request.args or "p4" not in request.args or "p5" not in request.args or "region" not in request.args:
         return redirect("/")
-    playerOBJs = util.loadPlayersFromCache(request.args["p1"][0], request.args["p2"][0], request.args["p3"][0], request.args["p4"][0], request.args["p5"][0])
+    playerOBJs = util.loadPlayersFromCache(request.args["p1"][0], request.args["p2"][0], request.args["p3"][0], request.args["p4"][0], request.args["p5"][0], request.args["region"][0])
     if playerOBJs == -1:
         return redirect("/")
     else:

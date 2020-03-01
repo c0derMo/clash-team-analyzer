@@ -13,19 +13,22 @@ import datetime
 champS = '{"1":"Annie","2":"Olaf","3":"Galio","4":"TwistedFate","5":"XinZhao","6":"Urgot","7":"Leblanc","8":"Vladimir","9":"Fiddlesticks","10":"Kayle","11":"MasterYi","12":"Alistar","13":"Ryze","14":"Sion","15":"Sivir","16":"Soraka","17":"Teemo","18":"Tristana","19":"Warwick","20":"Nunu","21":"MissFortune","22":"Ashe","23":"Tryndamere","24":"Jax","25":"Morgana","26":"Zilean","27":"Singed","28":"Evelynn","29":"Twitch","30":"Karthus","31":"Chogath","32":"Amumu","33":"Rammus","34":"Anivia","35":"Shaco","36":"DrMundo","37":"Sona","38":"Kassadin","39":"Irelia","40":"Janna","41":"Gangplank","42":"Corki","43":"Karma","44":"Taric","45":"Veigar","48":"Trundle","50":"Swain","51":"Caitlyn","53":"Blitzcrank","54":"Malphite","55":"Katarina","56":"Nocturne","57":"Maokai","58":"Renekton","59":"JarvanIV","60":"Elise","61":"Orianna","62":"MonkeyKing","63":"Brand","64":"LeeSin","67":"Vayne","68":"Rumble","69":"Cassiopeia","72":"Skarner","74":"Heimerdinger","75":"Nasus","76":"Nidalee","77":"Udyr","78":"Poppy","79":"Gragas","80":"Pantheon","81":"Ezreal","82":"Mordekaiser","83":"Yorick","84":"Akali","85":"Kennen","86":"Garen","89":"Leona","90":"Malzahar","91":"Talon","92":"Riven","96":"KogMaw","98":"Shen","99":"Lux","101":"Xerath","102":"Shyvana","103":"Ahri","104":"Graves","105":"Fizz","106":"Volibear","107":"Rengar","110":"Varus","111":"Nautilus","112":"Viktor","113":"Sejuani","114":"Fiora","115":"Ziggs","117":"Lulu","119":"Draven","120":"Hecarim","121":"Khazix","122":"Darius","126":"Jayce","127":"Lissandra","131":"Diana","133":"Quinn","134":"Syndra","136":"AurelionSol","141":"Kayn","142":"Zoe","143":"Zyra","145":"Kaisa","150":"Gnar","154":"Zac","157":"Yasuo","161":"Velkoz","163":"Taliyah","164":"Camille","201":"Braum","202":"Jhin","203":"Kindred","222":"Jinx","223":"TahmKench","235":"Senna","236":"Lucian","238":"Zed","240":"Kled","245":"Ekko","246":"Qiyana","254":"Vi","266":"Aatrox","267":"Nami","268":"Azir","350":"Yuumi","412":"Thresh","420":"Illaoi","421":"RekSai","427":"Ivern","429":"Kalista","432":"Bard","497":"Rakan","498":"Xayah","516":"Ornn","517":"Sylas","518":"Neeko","523":"Aphelios","555":"Pyke"}'
 champJSON = json.loads(champS)
 
-masteryRow = '<tr><th scope="row">%NR</th><td><img src="http://ddragon.leagueoflegends.com/cdn/9.24.2/img/champion/%CHAMP.png" style="width: 60px; height: 60px;"></td><td>%CHAMP</td><td>%LEVEL</td><td>%POINTS</td></tr>'
-mostPlayedRow = '<tr><th scope="row">%NR</th><td><img src="http://ddragon.leagueoflegends.com/cdn/9.24.2/img/champion/%CHAMP.png" style="width: 60px; height: 60px;"></td><td>%CHAMP</td><td>%AMOUNT</td></tr>'
+version = "9.24.2"
+
+masteryRow = '<tr><th scope="row">%NR</th><td><img src="http://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/%CHAMP.png" style="width: 60px; height: 60px;"></td><td>%CHAMP</td><td>%LEVEL</td><td>%POINTS</td></tr>'
+mostPlayedRow = '<tr><th scope="row">%NR</th><td><img src="http://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/%CHAMP.png" style="width: 60px; height: 60px;"></td><td>%CHAMP</td><td>%AMOUNT</td></tr>'
 
 def getChampionName(id):
     return champJSON[str(id)]
 
 def getChampInfo():
     global champJSON
+    global version
     response = requests.get("https://ddragon.leagueoflegends.com/api/versions.json")
     if response.status_code != 200:
         return False
-    version = ast.literal_eval(response.text)[0]
-    r2 = requests.get("http://ddragon.leagueoflegends.com/cdn/" + str(version) + "/data/en_US/champion.json")
+    version = str(ast.literal_eval(response.text)[0])
+    r2 = requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json")
     if r2.status_code != 200:
         return False
     jsData = json.loads(r2.text)
@@ -61,22 +64,22 @@ def loadDemoData():
             f.close()
     return playerOBJs
 
-def loadPlayersFromCache(p1, p2, p3, p4, p5):
+def loadPlayersFromCache(p1, p2, p3, p4, p5, region):
     players = [p1, p2, p3, p4, p5]
     playerOBJs = []
     try:
         for player in players:
             p1O = Player.Player()
-            f = open("cache/players/" + player + ".player")
+            f = open("cache/" + region + "/players/" + player + ".player")
             p1O.setSummonerInfo(json.loads(f.read()))
             f.close()
-            f = open("cache/masterys/" + p1O.getEncryptedSummonerId() + ".mastery")
+            f = open("cache/" + region + "/masterys/" + p1O.getEncryptedSummonerId() + ".mastery")
             p1O.setMasteryInfo(json.loads(f.read()))
             f.close()
-            f = open("cache/matchlists/" + p1O.getEncryptedAccountId() + ".matchlist")
+            f = open("cache/" + region + "/matchlists/" + p1O.getEncryptedAccountId() + ".matchlist")
             p1O.setMatchlist(json.loads(f.read()))
             f.close()
-            f = open("cache/league/" + p1O.getEncryptedSummonerId() + ".league")
+            f = open("cache/" + region + "/league/" + p1O.getEncryptedSummonerId() + ".league")
             p1O.setLeagueInfo(json.loads(f.read()))
             f.close()
             playerOBJs.append(p1O)
@@ -86,7 +89,7 @@ def loadPlayersFromCache(p1, p2, p3, p4, p5):
         for i in range(0, p1O.getMaxMatches()):
             mToAnalyze = p1O.getMatchToAnalyze()
             try:
-                f = open("cache/matches/" + str(mToAnalyze) + ".match")
+                f = open("cache/" + region + "/matches/" + str(mToAnalyze) + ".match")
                 p1O.setMatchInfo(mToAnalyze, json.loads(f.read()))
                 f.close()
             except FileNotFoundError:
@@ -234,10 +237,10 @@ def getStatistics(date=datetime.datetime.now().strftime("%Y-%m-%d")):
         result["analyze"] = {"analyzeCount": 0, "unCachedPlayer": 0, "cachedPlayer": 0, "unCachedMatch": 0, "cachedMatch": 0}
     return result
 
-async def addNon200Error(code, player, request):
+async def addNon200Error(code, player, request, region):
     fn = datetime.datetime.now().strftime("%Y-%m-%d.data")
     f = open("statistics/errors/" + fn, "a")
-    f.write(datetime.datetime.now().strftime("%H:%M:%S ") + str(code) + " for player " + str(player) + " when requesting " + str(request) + "\n")
+    f.write(datetime.datetime.now().strftime("%H:%M:%S ") + str(code) + " for player " + str(player) + " when requesting " + str(request) + " [Platform: " + region + "]\n")
     f.close()
 
 def getMatchesPlayedTogether(p1, p2):
@@ -293,3 +296,8 @@ def createFolderStructure():
     createRegionFolderStructure("oce")
     createRegionFolderStructure("tr")
     createRegionFolderStructure("ru")
+
+    os.makedirs("statistics/errors/", exist_ok=True)
+    os.makedirs("statistics/analyze/", exist_ok=True)
+    os.makedirs("statistics/returncodes/", exist_ok=True)
+    os.makedirs("statistics/views/", exist_ok=True)
