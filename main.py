@@ -123,6 +123,8 @@ async def analyzeStart(sid, message):
     asyncio.create_task(analyzor.analyzeWrap(message, sid, sio, logger))
 
 if __name__ == '__main__':
+    util.createFolderStructure()
+
     hasValidKey = analyzor.hasValidAPIKey()
     if hasValidKey:
         logger.info("We've got a valid API-Key. Full functionality.")

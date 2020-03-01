@@ -273,3 +273,23 @@ def getMatchesPlayedAsFullTeam(players):
         p5MatchIDS.append(match["gameId"])
 
     return len(set(p1MatchIDS) & set(p2MatchIDS) & set(p3MatchIDS) & set(p4MatchIDS) & set(p5MatchIDS))
+
+def createRegionFolderStructure(region):
+    os.makedirs("cache/" + region + "/league/", exist_ok=True)
+    os.makedirs("cache/" + region + "/masterys/", exist_ok=True)
+    os.makedirs("cache/" + region + "/matches/", exist_ok=True)
+    os.makedirs("cache/" + region + "/matchlists/", exist_ok=True)
+    os.makedirs("cache/" + region + "/players/", exist_ok=True)
+
+def createFolderStructure():
+    createRegionFolderStructure("euw")
+    createRegionFolderStructure("na")
+    createRegionFolderStructure("eune")
+    createRegionFolderStructure("br")
+    createRegionFolderStructure("jp")
+    createRegionFolderStructure("kr")
+    createRegionFolderStructure("lan")
+    createRegionFolderStructure("las")
+    createRegionFolderStructure("oce")
+    createRegionFolderStructure("tr")
+    createRegionFolderStructure("ru")
