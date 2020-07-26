@@ -73,7 +73,18 @@ async def getTeam(request):
                         champName = util.getChampionName(champ)
                     except KeyError:
                         champName = "unknown"
-                tmp[champName] = sortedChamps[champ]
+                try:
+                    champID = util.getChampionID(champ)
+                except KeyError:
+                    util.getChampInfo()
+                    try:
+                        champID = util.getChampionID(champ)
+                    except KeyError:
+                        champID = "unknown"
+                tmp2 = {"champID": champID,
+                        "champ": champName,
+                        "times": sortedChamps[champ]}
+                tmp[champName] = tmp2
                 tmp.move_to_end(champName)
             mPC[player] = tmp
         
@@ -89,7 +100,16 @@ async def getTeam(request):
                         champName = util.getChampionName(champ["championId"])
                     except KeyError:
                         champName = "unknown"
+                try:
+                    champID = util.getChampionID(champ["championId"])
+                except KeyError:
+                    util.getChampInfo()
+                    try:
+                        champID = util.getChampionID(champ["championId"])
+                    except KeyError:
+                        champID = "unknown"
                 tmp = {"champ": champName,
+                        "champID": champID,
                         "level": champ["championLevel"],
                         "points": champ["championPoints"]}
                 mC[player].append(tmp)

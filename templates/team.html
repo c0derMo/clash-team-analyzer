@@ -132,7 +132,7 @@
                                         <tbody>
                                             {% for champ in mastery[player] %}
                                             <tr>
-                                                <td><img src="http://ddragon.leagueoflegends.com/cdn/{{patch}}/img/champion/{{champ["champ"]}}.png" style="width: 60px; height: 60px;"></td>
+                                                <td><img src="http://ddragon.leagueoflegends.com/cdn/{{patch}}/img/champion/{{champ["champID"]}}.png" style="width: 60px; height: 60px;"></td>
                                                 <td>{{champ["champ"]}}</td>
                                                 <td>{{champ["level"]}}</td>
                                                 <td>{{champ["points"]}}</td>
@@ -152,9 +152,9 @@
                                             <tbody>
                                                 {% for champ in mostPlayedChamps[player] %}
                                                 <tr>
-                                                    <td><img src="http://ddragon.leagueoflegends.com/cdn/{{patch}}/img/champion/{{champ}}.png" style="width: 60px; height: 60px;"></td>
-                                                    <td>{{champ}}</td>
-                                                    <td>{{mostPlayedChamps[player][champ]}}</td>
+                                                    <td><img src="http://ddragon.leagueoflegends.com/cdn/{{patch}}/img/champion/{{mostPlayedChamps[player][champ]["champID"]}}.png" style="width: 60px; height: 60px;"></td>
+                                                    <td>{{mostPlayedChamps[player][champ]["champ"]}}</td>
+                                                    <td>{{mostPlayedChamps[player][champ]["times"]}}</td>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>
