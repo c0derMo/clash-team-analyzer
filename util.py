@@ -21,14 +21,14 @@ mostPlayedRow = '<tr><th scope="row">%NR</th><td><img src="http://ddragon.league
 def getChampionName(id):
     return champJSON[str(id)]
 
-async def getChampInfo():
+def getChampInfo():
     global champJSON
     global version
-    response = await requests.get("https://ddragon.leagueoflegends.com/api/versions.json")
+    response = requests.get("https://ddragon.leagueoflegends.com/api/versions.json")
     if response.status_code != 200:
         return False
     version = str(ast.literal_eval(response.text)[0])
-    r2 = await requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json")
+    r2 = requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json")
     if r2.status_code != 200:
         return False
     jsData = json.loads(r2.text)

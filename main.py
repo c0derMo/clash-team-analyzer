@@ -68,7 +68,7 @@ async def getTeam(request):
                 try:
                     champName = util.getChampionName(champ)
                 except KeyError:
-                    await util.getChampInfo()
+                    util.getChampInfo()
                     try:
                         champName = util.getChampionName(champ)
                     except KeyError:
@@ -84,17 +84,17 @@ async def getTeam(request):
                 try:
                     champName = util.getChampionName(champ["championId"])
                 except KeyError:
-                    await util.getChampInfo()
+                    util.getChampInfo()
                     try:
                         champName = util.getChampionName(champ["championId"])
                     except KeyError:
                         champName = "unknown"
-                tmp = {"champ": util.getChampionName(champName),
+                tmp = {"champ": champName,
                         "level": champ["championLevel"],
                         "points": champ["championPoints"]}
                 mC[player].append(tmp)
 
-        return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC)
+        return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC, patch=util.getVersion())
 
 @app.route('/demodata')
 async def getDemoData(request):
@@ -140,7 +140,6 @@ async def analyzeStart(sid, message):
 
 if __name__ == '__main__':
     util.createFolderStructure()
-    util.getChampInfo()
 
     hasValidKey = analyzor.hasValidAPIKey()
     if hasValidKey:
