@@ -119,7 +119,7 @@ async def getDemoData(request):
                     "points": champ["championPoints"]}
             mC[player].append(tmp)
 
-    return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC, matchesPlayedAsTeam=util.getMatchesPlayedAsFullTeam(playerOBJs))
+    return jinja.render("team.html", request, players=playerOBJs, mostPlayedChamps=mPC, mastery=mC, matchesPlayedAsTeam=util.getMatchesPlayedAsFullTeam(playerOBJs), patch=util.getVersion())
 
 @app.route('/favicon.ico')
 async def getFavicon(request):

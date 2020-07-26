@@ -1,6 +1,6 @@
 {
     "_keyTypeComment": "Enter either dev or production to specify your API-Key.",
-    "keyType": "dev",
+    "keyType": "production",
     "rateLimits": {
         "_rateLimitsComment": "perSecond & per2Minutes are only used for dev-keys, per10Seconds & per10Minutes for produciion-keys.",
         "perSecond": 20,

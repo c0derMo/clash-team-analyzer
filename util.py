@@ -38,6 +38,9 @@ async def getChampInfo():
     champJSON = resultData
     return True
 
+def getVersion():
+    return version
+
 def loadDemoData():
     players = ["Inselsüchtiger", "Quanox", "Senôr Aυtism", "Rechtsklickquell", "nvq2015"]
     playerOBJs = []
