@@ -65,15 +65,31 @@ async def getTeam(request):
             tmp = OrderedDict()
             sortedChamps = OrderedDict(sorted(player.getMostPlayedChampions().items(), key=lambda item: item[1], reverse=True))
             for champ in sortedChamps:
-                tmp[util.getChampionName(champ)] = sortedChamps[champ]
-                tmp.move_to_end(util.getChampionName(champ))
+                try:
+                    champName = util.getChampionName(champ)
+                except KeyError:
+                    await util.getChampInfo()
+                    try:
+                        champName = util.getChampionName(champ)
+                    except KeyError:
+                        champName = "unknown"
+                tmp[champName] = sortedChamps[champ]
+                tmp.move_to_end(champName)
             mPC[player] = tmp
         
         mC = {}
         for player in playerOBJs:
             mC[player] = []
             for champ in player.getMastery():
-                tmp = {"champ": util.getChampionName(champ["championId"]),
+                try:
+                    champName = util.getChampionName(champ["championId"])
+                except KeyError:
+                    await util.getChampInfo()
+                    try:
+                        champName = util.getChampionName(champ["championId"])
+                    except KeyError:
+                        champName = "unknown"
+                tmp = {"champ": util.getChampionName(champName),
                         "level": champ["championLevel"],
                         "points": champ["championPoints"]}
                 mC[player].append(tmp)
@@ -124,6 +140,7 @@ async def analyzeStart(sid, message):
 
 if __name__ == '__main__':
     util.createFolderStructure()
+    util.getChampInfo()
 
     hasValidKey = analyzor.hasValidAPIKey()
     if hasValidKey:
