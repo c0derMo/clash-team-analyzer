@@ -15,12 +15,12 @@ This project automaticly analyzes teams of 5 people using the supplied summoner-
 Cached details will be deleted after 2 hours, cached games will be deleted after one day.
 
 Using those cached informations, this tool will tell you for each player...
-- their most played posision in the last 30 days
+- their most played position in the last 30 days
 - their winrate and average kda of the last 20 games
 - ranks & elo
 - champion levels and points
 - most played champions in the last 30 days
+- List how many games they have played together
 
 ### Planned features:
-- List how many games they have played together
 - Winrates based on role
