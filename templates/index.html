@@ -3,122 +3,78 @@
     <head>
         <title>Clash-Team-Analyzer</title>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="/assets/semanticui/darkly.css">
     </head>
     <body>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    <br>
-                    <img src="assets/clash.png" width="100%" height="100%">
-                    <br>
-                </div>
+        <div class="ui container">
+            <img class="ui fluid image" src="assets/clash.png"><br>
+            <h1 class="ui header center aligned">Team-Analyser</h1>
+            <div class="ui divider"></div>
+            {% if demo %}
+            <div class="ui error message">
+                <div class="header">Invalid API key.</div>
+                <p>This instance of the "Clash-Team-Analyzer" is currently running without a valid API-Key, and therefore, analyzing has been disabled.
+                    However, you can look up demo-data <a href="/demodata">here.</a></p>
             </div>
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    <br>
-                    <h1 style="text-align: center">Team-Analyzer</h1>
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    {% if demo %}
-                    <div class="alert alert-danger" role="alert">
-                        This instance of the "Clash-Team-Analyzer" is currently running without a valid API-Key, and therefore, analyzing has been disabled.
-                        However, you can look up demo-data <a href="/demodata">here.</a>
-                    </div>
-                    {% endif %}
-                    <div class="input-group md-6">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">Player 1</span>
-                        </div>
-                        <input type="text" id="p1" class="form-control"  aria-describedby="basic-addon1">
-                    </div>
-                    <br>
-                    <div class="input-group md-6">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">Player 2</span>
-                        </div>
-                        <input type="text" id="p2" class="form-control"  aria-describedby="basic-addon1">
-                    </div>
-                    <br>
-                    <div class="input-group md-6">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">Player 3</span>
-                        </div>
-                        <input type="text" id="p3" class="form-control"  aria-describedby="basic-addon1">
-                    </div>
-                    <br>
-                    <div class="input-group md-6">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">Player 4</span>
-                        </div>
-                        <input type="text" id="p4" class="form-control"  aria-describedby="basic-addon1">
-                    </div>
-                    <br>
-                    <div class="input-group md-6">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">Player 5</span>
-                        </div>
-                        <input type="text" id="p5" class="form-control"  aria-describedby="basic-addon1">
-                    </div>
-                    <br>
-                    <div class="input-group mb-1">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="regionSelect">Region</label>
-                        </div>
-                        <select class="custom-select" id="regionSelect">
-                            <option value="br">BR</option>
-                            <option value="eune">EUNE</option>
-                            <option value="euw" selected>EUW</option>
-                            <option value="jp">JP</option>
-                            <option value="kr">KR</option>
-                            <option value="lan">LAN</option>
-                            <option value="las">LAS</option>
-                            <option value="na">NA</option>
-                            <option value="oce">OCE</option>
-                            <option value="ru">RU</option>
-                            <option value="tr">TR</option>
-                        </select>
-                        <button type="button" class="btn btn-success" id="send" style="width: 80%; margin-left: 20px;">Analyze</button>
+            <div class="ui divider"></div>
+            {% endif %}
+            <div class="ui labeled inverted fluid input">
+                <div class="ui blue label">Player 1</div>
+                <input type="text" id="p1">
+            </div><br>
+            <div class="ui labeled inverted fluid input">
+                <div class="ui blue label">Player 2</div>
+                <input type="text" id="p2">
+            </div><br>
+            <div class="ui labeled inverted fluid input">
+                <div class="ui blue label">Player 3</div>
+                <input type="text" id="p3">
+            </div><br>
+            <div class="ui labeled inverted fluid input">
+                <div class="ui blue label">Player 4</div>
+                <input type="text" id="p4">
+            </div><br>
+            <div class="ui labeled inverted fluid input">
+                <div class="ui blue label">Player 5</div>
+                <input type="text" id="p5">
+            </div><br>
+            <div class="ui grid">
+                <div class="four wide column">
+                    <div class="ui selection dropdown" id="regionDropdown">
+                        <input type="hidden" id="regionSelect">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">EUW</div>
                     </div>
                 </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    {% if not demo %}
-                    <h4 id="status">Status: not analyzing</h4>
-                    {% else %}
-                    <h4 id="status">Status: Invalid API-Key</h4>
-                    {% endif %}
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="progress-bar"></div>
-                    </div>
+                <div class="twelve wide column">
+                    <button class="fluid ui green button" id="send">Analyze</button>
                 </div>
             </div>
-            <hr>
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    <a href="statistics" style="margin-right: 15px;">Statistics</a>
-                    <a href="demodata" style="margin-right: 15px;">Demo-Data</a>
-                    <a href="http://github.com/c0dermo/clash-team-analyzer" target="_blank">GitHub</a>
+            
+            <div class="ui divider"></div>
+            {% if not demo %}
+            <h3 class="ui header" id="status">Status: not analyzing</h3>
+            {% else %}
+            <h3 class="ui header">Status: Invalid API-Key</h3>
+            {% endif %}
+            <div class="ui progress" id="progressbar">
+                <div class="bar">
+                    <div class="progress"></div>
                 </div>
             </div>
-            <br>
-            <div class="row">
-                <div class="col-md-10 offset-md-1">
-                    <p class="text-monospace" style="font-size: 8pt">Clash-Team-Analyzer isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games
-                            or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are
-                            trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</p>
-                </div>
-            </div>
+            <div class="ui divider"></div>
+            <a href="statistics" style="margin-right: 15px;">Statistics</a>
+            <a href="demodata" style="margin-right: 15px;">Demo-Data</a>
+            <a href="http://github.com/c0dermo/clash-team-analyzer" target="_blank">GitHub</a>
+            <br><br>
+            <p style="font-size: 8pt">Clash-Team-Analyzer isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games
+                or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are
+                trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</p>
+
         </div>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+        <script src="/assets/semanticui/semantic.min.js"></script>
         <script>
             {% if not demo %}
             var socket = io.connect();
@@ -131,28 +87,88 @@
                 var p5 = $('#p5').val();
                 
                 socket.emit('analyzeStart', {"players": [p1, p2, p3, p4, p5], "region": $('#regionSelect').val()})
-                $('#progress-bar').css('width', '0%').removeClass("bg-danger");
+                $('#progressbar').progress({
+                    autoSuccess: false,
+                    percent: 0
+                }).addClass("warning").removeClass("success").removeClass("error");
+                $('#send').addClass('loading');
                 $('#status').text("Status: Starting analyze...")
             }
 
             socket.on('analyzeSuccessful', function(msg) {
                 console.log("Analyze successful! Redirect: " + msg)
-                $('#progress-bar').css('width', '100%');
+                $('#progressbar').progress({
+                    percent: 100
+                }).removeClass("warning").addClass("success");
+                $('#send').removeClass('loading');
                 $('#status').text("Status: Analyze complete! Redirecting...")
                 window.location.href = msg;
             });
 
             socket.on('analyzeUpdate', function(msg) {
                 console.log('Analyze update: ' + msg)
-                $('#progress-bar').css('width', String((msg.current/msg.max)*100) + '%');
+                $('#progressbar').progress({
+                    percent: ((msg.current/msg.max)*100)
+                }).addClass('warning');
                 $('#status').text("Status: " + msg.status)
             });
             
             socket.on('analyzeFailed', function(msg) {
-                $('#progress-bar').addClass("bg-danger")
+                $('#progressbar').addClass('error').removeClass('warning');
+                $('#send').removeClass('loading');
                 $('#status').text("Status: " + msg + " Please check your player names and retry.")
             });
             {% endif %}
+
+            $('#regionDropdown').dropdown({
+                values: [
+                    {
+                        name: "BR",
+                        value: "br"
+                    },
+                    {
+                        name: "EUNE",
+                        value: "eune"
+                    },
+                    {
+                        name: "EUW",
+                        value: "euw",
+                        selected: true
+                    },
+                    {
+                        name: "JP",
+                        value: "jp"
+                    },
+                    {
+                        name: "KR",
+                        value: "kr"
+                    },
+                    {
+                        name: "LAN",
+                        value: "lan"
+                    },
+                    {
+                        name: "LAS",
+                        value: "las"
+                    },
+                    {
+                        name: "NA",
+                        value: "na"
+                    },
+                    {
+                        name: "OCE",
+                        value: "oce"
+                    },
+                    {
+                        name: "RU",
+                        value: "ru"
+                    },
+                    {
+                        name: "TR",
+                        value: "tr"
+                    }
+                ]
+            });
         </script>
     </body>
 </html>
