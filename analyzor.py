@@ -93,6 +93,14 @@ region_infos = {
     },
 }
 
+class AnalyzeError(Exception):
+    def __init__(self, message, name, query, code, response):
+        super().__init__(message)
+        self.name = name
+        self.query = query
+        self.code = code
+        self.response = response
+
 api_key = os.getenv("API_KEY")
 
 def hasValidAPIKey():
@@ -101,14 +109,14 @@ def hasValidAPIKey():
     response = requests.get(region_infos["euw"]["host"] + "/lol/status/v3/shard-data?api_key=" + api_key)
     code = response.status_code
     if code > 499:
-        return hasValidKey()
+        return hasValidAPIKey()
     if code == 401 or code == 403:
         return False
     else:
         return True
 
 async def queryDev(endpoint, additional_arguments, region):
-    while(region_infos[region]["requestsDuringLastSecond"].__len__() >= config.Config.getRateLimitPerSecond() or region_infos[region]["requestsDuringLastTwoMinutes"].__len__() >= config.Config.getRateLimitPer2Minutes()):
+    while(region_infos[region]["requestsDuringLastSecond"].__len__() >= config.getRateLimitPerSecond() or region_infos[region]["requestsDuringLastTwoMinutes"].__len__() >= config.getRateLimitPer2Minutes()):
         for request in region_infos[region]["requestsDuringLastSecond"]:
             if time.time()-request > 1:
                 region_infos[region]["requestsDuringLastSecond"].remove(request)
@@ -129,7 +137,7 @@ async def queryDev(endpoint, additional_arguments, region):
     return code, jdata
 
 async def queryProd(endpoint, additional_arguments, region):
-    while(region_infos[region]["requestsDuringLast10Seconds"].__len__() >= config.Config.getRateLimitPer10Seconds() or region_infos[region]["requestsDuringLast10Minutes"].__len__() >= config.Config.getRateLimitPer10Minutes()):
+    while(region_infos[region]["requestsDuringLast10Seconds"].__len__() >= config.getRateLimitPer10Seconds() or region_infos[region]["requestsDuringLast10Minutes"].__len__() >= config.getRateLimitPer10Minutes()):
         for request in region_infos[region]["requestsDuringLast10Seconds"]:
             if time.time()-request > 10:
                 region_infos[region]["requestsDuringLast10Seconds"].remove(request)
@@ -150,18 +158,10 @@ async def queryProd(endpoint, additional_arguments, region):
     return code, jdata
 
 async def query(endpoint, additional_arguments="", region="euw"):
-    if config.Config.getAPIType() == "production":
+    if config.getAPIType() == "production":
         return await queryProd(endpoint, additional_arguments, region)
     else:
         return await queryDev(endpoint, additional_arguments, region)
-
-class AnalyzeError(Exception):
-    def __init__(self, message, name, query, code, response):
-        super().__init__(message)
-        self.name = name
-        self.query = query
-        self.code = code
-        self.response = response
 
 async def analyzeWrap(msg, sid, sio, logger):
     try:

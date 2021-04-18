@@ -171,23 +171,23 @@ if __name__ == '__main__':
         logger.error("! We could not get up-to-date champ information from the Data Dragon !")
     
     try:
-        config.Config.readConfig()
+        config.readConfig()
     except FileNotFoundError:
         logger.error("! No config file was found! Standard development-configuration loaded. !")
-        config.Config.loadDefaultConfig()
+        config.loadDefaultConfig()
     finally:
         logger.info("Current configuration:")
-        logger.info("Key-Type: " + config.Config.getAPIType())
-        if config.Config.getAPIType() == "production":
-            logger.info("Ratelimit per 10 seconds: " + str(config.Config.getRateLimitPer10Seconds()))
-            logger.info("Ratelimit per 10 minutes: " + str(config.Config.getRateLimitPer10Minutes()))
-        elif config.Config.getAPIType() == "dev":
-            logger.info("Ratelimit per 1 second: " + str(config.Config.getRateLimitPerSecond()))
-            logger.info("Ratelimit per 2 minutes: " + str(config.Config.getRateLimitPer2Minutes()))
+        logger.info("Key-Type: " + config.getAPIType())
+        if config.getAPIType() == "production":
+            logger.info("Ratelimit per 10 seconds: " + str(config.getRateLimitPer10Seconds()))
+            logger.info("Ratelimit per 10 minutes: " + str(config.getRateLimitPer10Minutes()))
+        elif config.getAPIType() == "dev":
+            logger.info("Ratelimit per 1 second: " + str(config.getRateLimitPerSecond()))
+            logger.info("Ratelimit per 2 minutes: " + str(config.getRateLimitPer2Minutes()))
         else:
             logger.warning("Couldn't read API-Key-Type! Using development-settings...")
-            logger.info("Ratelimit per 1 second: " + str(config.Config.getRateLimitPerSecond()))
-            logger.info("Ratelimit per 2 minutes: " + str(config.Config.getRateLimitPer2Minutes()))
-        logger.info("Matches to analyze per player: " + str(config.Config.getMatchCountToAnalyze()))
+            logger.info("Ratelimit per 1 second: " + str(config.getRateLimitPerSecond()))
+            logger.info("Ratelimit per 2 minutes: " + str(config.getRateLimitPer2Minutes()))
+        logger.info("Matches to analyze per player: " + str(config.getMatchCountToAnalyze()))
 
-    app.run(host=config.Config.getHostname(), port=config.Config.getPort())
+    app.run(host=config.getHostname(), port=config.getPort())
