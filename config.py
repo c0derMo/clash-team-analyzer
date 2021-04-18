@@ -4,79 +4,59 @@
 
 import json
 
-fileRead = False
-cfg = {}
-
 class Config:
-    def loadDefaultConfig():
-        global cfg
-        global fileRead
-        cfg["keyType"] = "dev"
-        cfg["rateLimits"]["perSecond"] = 20
-        cfg["rateLimits"]["per2Minutes"] = 100
-        cfg["matchesToAnalyze"] = 20
-        cfg["hostname"] = "127.0.0.1"
-        cfg["port"] = 8000
+    def loadDefaultConfig(self):
+        self.cfg = {}
+        self.fileRead = False
+        self.cfg["keyType"] = "dev"
+        self.cfg["rateLimits"] = {}
+        self.cfg["rateLimits"]["perSecond"] = 20
+        self.cfg["rateLimits"]["per2Minutes"] = 100
+        self.cfg["matchesToAnalyze"] = 20
+        self.cfg["hostname"] = "127.0.0.1"
+        self.cfg["port"] = 8000
 
-    def readConfig():
-        global cfg
-        global fileRead
+    def readConfig(self):
         with open("config.json") as f:
-            cfg = json.loads(f.read())
-            fileRead = True
+            self.cfg = json.loads(f.read())
+            self.fileRead = True
 
-    def getAPIType():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["keyType"]
+    def getAPIType(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["keyType"]
 
-    def getRateLimitPerSecond():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["rateLimits"]["perSecond"]
+    def getRateLimitPerSecond(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["rateLimits"]["perSecond"]
 
-    def getRateLimitPer2Minutes():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["rateLimits"]["per2Minutes"]
+    def getRateLimitPer2Minutes(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["rateLimits"]["per2Minutes"]
 
-    def getRateLimitPer10Seconds():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["rateLimits"]["per10Seconds"]
+    def getRateLimitPer10Seconds(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["rateLimits"]["per10Seconds"]
 
-    def getRateLimitPer10Minutes():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["rateLimits"]["per10Minutes"]
+    def getRateLimitPer10Minutes(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["rateLimits"]["per10Minutes"]
 
-    def getMatchCountToAnalyze():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["matchesToAnalyze"]
+    def getMatchCountToAnalyze(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["matchesToAnalyze"]
     
-    def getHostname():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["hostname"]
+    def getHostname(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["hostname"]
     
-    def getPort():
-        global cfg
-        global fileRead
-        if not fileRead:
-            readConfig()
-        return cfg["port"]
+    def getPort(self):
+        if not self.fileRead:
+            self.readConfig()
+        return self.cfg["port"]
