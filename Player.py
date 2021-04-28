@@ -24,7 +24,6 @@ class Player():
                 self.unanalyzedMatches.append(mlist["matches"][i]["gameId"])
     
     def setMatchInfo(self, matchId, mInfo):
-        self.unanalyzedMatches.remove(matchId)
         self.analyzedMatches.append(mInfo)
     
     def setLeagueInfo(self, linfo):
@@ -132,7 +131,7 @@ class Player():
     
     def getMatchToAnalyze(self):
         if self.unanalyzedMatches.__len__() > 0:
-            return self.unanalyzedMatches[0]
+            return self.unanalyzedMatches.pop(0)
         else:
             return -1
     

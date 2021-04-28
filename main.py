@@ -3,7 +3,6 @@ from sanic.response import html, redirect, text, raw
 from sanic.log import logger
 import analyzor
 import asyncio
-import socketio
 import os
 import glob
 import util
@@ -11,11 +10,11 @@ import time
 from sanic_jinja2 import SanicJinja2
 import config
 from collections import OrderedDict
+import json
+from sanic.websocket import WebSocketProtocol
 
-sio = socketio.AsyncServer(async_mode='sanic', logger=False)
-app = Sanic()
-sio.attach(app)
-jinja = SanicJinja2(app)
+app = Sanic(name="CTA")
+jinja = SanicJinja2(app, pkg_name="main")
 
 lastClearMatches = 0
 lastClearEverything = 0
@@ -46,9 +45,9 @@ async def main(request):
     asyncio.create_task(util.addPageAnalytic("/"))
     asyncio.create_task(clearDB())
     if hasValidKey:
-        return jinja.render("index.html", request, demo=False)
+        return jinja.render("index.html", request, demo=False, host=config.getHostname() + ":" + str(config.getPort()))
     else:
-        return jinja.render("index.html", request, demo=True)
+        return jinja.render("index.html", request, demo=True, host=config.getHostname() + ":" + str(config.getPort()))
 
 @app.route('/team')
 async def getTeam(request):
@@ -153,10 +152,12 @@ async def getStatistics(request):
         dataX = util.getStatistics(request.args["date"][0])
     return jinja.render("statistics.html", request, data=dataX)
 
-@sio.event
-async def analyzeStart(sid, message):
-    asyncio.create_task(util.addStatAnalyze())
-    asyncio.create_task(analyzor.analyzeWrap(message, sid, sio, logger))
+@app.websocket("/analyze")
+async def analyzeWSRoute(request, ws):
+    while True:
+        data = json.loads(await ws.recv())
+        asyncio.create_task(util.addStatAnalyze())
+        asyncio.create_task(analyzor.newAnalyzeWrapper(data, ws, logger))
 
 if __name__ == '__main__':
     util.createFolderStructure()
@@ -190,4 +191,4 @@ if __name__ == '__main__':
             logger.info("Ratelimit per 2 minutes: " + str(config.getRateLimitPer2Minutes()))
         logger.info("Matches to analyze per player: " + str(config.getMatchCountToAnalyze()))
 
-    app.run(host=config.getHostname(), port=config.getPort())
+    app.run(host=config.getHostname(), port=config.getPort(), protocol=WebSocketProtocol)

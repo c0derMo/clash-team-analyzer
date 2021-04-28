@@ -73,11 +73,11 @@
 
         </div>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
         <script src="/assets/semanticui/semantic.js"></script>
         <script>
             {% if not demo %}
-            var socket = io.connect();
+            var testSocket = new WebSocket("ws://{{host}}/analyze")
+            console.log("Socket opened.")
 
             document.getElementById("send").onclick = function() {
                 var p1 = $('#p1').val();
@@ -85,8 +85,13 @@
                 var p3 = $('#p3').val();
                 var p4 = $('#p4').val();
                 var p5 = $('#p5').val();
-                
-                socket.emit('analyzeStart', {"players": [p1, p2, p3, p4, p5], "region": $('#regionSelect').val()})
+
+                // Socket stuff
+                if(testSocket.readyState === WebSocket.OPEN) {
+                    console.log("Data sent.")
+                    testSocket.send(JSON.stringify({event: "analyzeStart", players: [p1, p2, p3, p4, p5], region: $('#regionSelect').val()}))
+                }
+
                 $('#progressbar').progress({
                     autoSuccess: false,
                     percent: 0
@@ -95,29 +100,37 @@
                 $('#status').text("Status: Starting analyze...")
             }
 
-            socket.on('analyzeSuccessful', function(msg) {
-                console.log("Analyze successful! Redirect: " + msg)
-                $('#progressbar').progress({
-                    percent: 100
-                }).removeClass("warning").addClass("success");
-                $('#send').removeClass('loading');
-                $('#status').text("Status: Analyze complete! Redirecting...")
-                window.location.href = msg;
-            });
+            testSocket.onmessage = function(event) {
+                var data = JSON.parse(event.data)
+                console.log(data);
+                switch(data.event) {
+                    case "update":
+                        console.log('Analyze update: ' + data.status + " " + data.current + "/" + data.max)
+                        $('#progressbar').progress({
+                            percent: ((data.current/data.max)*100)
+                        }).addClass('warning');
+                        $('#status').text("Status: " + data.status)
+                        break;
+                    case "success":
+                        console.log("Analyze successful! Redirect: " + data.link)
+                        $('#progressbar').progress({
+                            percent: 100
+                        }).removeClass("warning").addClass("success");
+                        $('#send').removeClass('loading');
+                        $('#status').text("Status: Analyze complete! Redirecting...")
+                        window.location.href = data.link;
+                        break;
+                    case "failure":
+                        $('#progressbar').addClass('error').removeClass('warning');
+                        $('#send').removeClass('loading');
+                        $('#status').text("Status: " + data.error + " Please check your player names and retry.")
+                        break;
+                    default:
+                        console.warn("Unknown event recieved: " + data.event)
+                        break;
+                }
+            }
 
-            socket.on('analyzeUpdate', function(msg) {
-                console.log('Analyze update: ' + msg)
-                $('#progressbar').progress({
-                    percent: ((msg.current/msg.max)*100)
-                }).addClass('warning');
-                $('#status').text("Status: " + msg.status)
-            });
-            
-            socket.on('analyzeFailed', function(msg) {
-                $('#progressbar').addClass('error').removeClass('warning');
-                $('#send').removeClass('loading');
-                $('#status').text("Status: " + msg + " Please check your player names and retry.")
-            });
             {% endif %}
 
             $('#regionDropdown').dropdown({
